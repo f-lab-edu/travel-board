@@ -1,5 +1,5 @@
 plugins {
-    java
+    id("java-library")
     id("org.springframework.boot") apply false
     id("io.spring.dependency-management") apply false
 }
@@ -29,7 +29,7 @@ allprojects {
 }
 
 subprojects {
-    apply(plugin = "java")
+    apply(plugin = "java-library")
     apply(plugin = "org.springframework.boot")
     apply(plugin = "io.spring.dependency-management")
 

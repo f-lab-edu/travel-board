@@ -1,10 +1,10 @@
-package com.app.apiuser;
+package com.app.travelboard;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class ApiUserApplicationTests {
+class ApiAdminApplicationTests {
 
     @Test
     void contextLoads() {
