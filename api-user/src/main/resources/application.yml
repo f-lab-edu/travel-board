@@ -1,3 +1,18 @@
 spring:
   application:
     name: api-user
+
+  profiles:
+    active: local
+
+  threads:
+    virtual:
+      enabled: true
+
+  config:
+    import:
+      - db-${spring.profiles.active}.yml
+      - logging.yml
+
+server:
+  port: 8080
