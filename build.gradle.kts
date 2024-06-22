@@ -1,15 +1,13 @@
 plugins {
     java
-    id("org.springframework.boot") version "3.3.0"
-    id("io.spring.dependency-management") version "1.1.5"
+    id("org.springframework.boot") apply false
+    id("io.spring.dependency-management") apply false
 }
 
-group = "com.app"
-version = "0.0.1-SNAPSHOT"
-
+val javaVersion: String by project
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
+        languageVersion = JavaLanguageVersion.of(javaVersion)
     }
 }
 
@@ -19,24 +17,39 @@ configurations {
     }
 }
 
-repositories {
-    mavenCentral()
+val projectGroup: String by project
+val applicationVersion: String by project
+allprojects {
+    group = projectGroup
+    version = applicationVersion
+
+    repositories {
+        mavenCentral()
+    }
 }
 
-dependencies {
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    implementation("org.springframework.boot:spring-boot-starter-web")
+subprojects {
+    apply(plugin = "java")
+    apply(plugin = "org.springframework.boot")
+    apply(plugin = "io.spring.dependency-management")
 
-    runtimeOnly("com.h2database:h2")
-    runtimeOnly("com.mysql:mysql-connector-j")
+    dependencies {
+        compileOnly("org.projectlombok:lombok")
+        annotationProcessor("org.projectlombok:lombok")
 
-    compileOnly("org.projectlombok:lombok")
-    annotationProcessor("org.projectlombok:lombok")
+        testImplementation("org.springframework.boot:spring-boot-starter-test")
+        testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    }
 
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-}
+    tasks.getByName("bootJar") {
+        enabled = false
+    }
 
-tasks.withType<Test> {
-    useJUnitPlatform()
+    tasks.getByName("jar") {
+        enabled = true
+    }
+
+    tasks.withType<Test> {
+        useJUnitPlatform()
+    }
 }

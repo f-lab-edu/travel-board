@@ -1,13 +1,13 @@
-package com.app.travelboard;
+package com.app.apiuser;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class TravelBoardApplication {
+public class ApiUserApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(TravelBoardApplication.class, args);
+        SpringApplication.run(ApiUserApplication.class, args);
     }
 
 }
