@@ -11,7 +11,7 @@ spring:
 
   config:
     import:
-      - db-${spring.profiles.active}.yml
+      - db-config.yml
       - logging.yml
 
 server:
