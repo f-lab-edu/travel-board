@@ -7,16 +7,10 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-import static jakarta.persistence.GenerationType.IDENTITY;
-
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Product extends BaseEntity {
-
-    @Id
-    @GeneratedValue(strategy = IDENTITY)
-    private Long id;
 
     @OneToOne
     @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name = "FK_product_user_id"))
@@ -26,7 +20,9 @@ public class Product extends BaseEntity {
     @Column(columnDefinition = "VARCHAR(30)")
     private ProductLevel level = ProductLevel.BASIC;
 
+    @Column
     private LocalDateTime startAt;
 
+    @Column
     private LocalDateTime endAt;
 }
