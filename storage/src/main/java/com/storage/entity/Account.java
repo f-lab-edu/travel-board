@@ -1,4 +1,4 @@
-package com.app.travelboard.storage.entity;
+package com.storage.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

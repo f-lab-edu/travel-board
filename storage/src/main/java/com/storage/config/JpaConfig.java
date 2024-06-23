@@ -1,4 +1,4 @@
-package com.app.travelboard.storage.config;
+package com.storage.config;
 
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Configuration;
@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @Configuration
 @EnableTransactionManagement
 @EnableJpaAuditing
-@EntityScan(basePackages = "com.app.travelboard.storage.entity")
-@EnableJpaRepositories(basePackages = "com.app.travelboard.storage.repository")
+@EntityScan(basePackages = "com.storage.entity")
+@EnableJpaRepositories(basePackages = "com.storage.repository")
 public class JpaConfig {
 }

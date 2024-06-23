@@ -1,10 +1,10 @@
-package com.app.travelboard;
+package com.user;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
+import org.springframework.context.annotation.ComponentScan;
 
-@ConfigurationPropertiesScan
+@ComponentScan(basePackages = {"com.user", "com.storage"})
 @SpringBootApplication
 public class ApiUserApplication {
 

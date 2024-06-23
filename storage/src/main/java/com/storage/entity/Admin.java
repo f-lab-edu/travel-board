@@ -1,4 +1,4 @@
-package com.app.travelboard.storage.entity;
+package com.storage.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.ForeignKey;

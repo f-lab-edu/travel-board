@@ -5,10 +5,6 @@ spring:
   profiles:
     active: local
 
-  threads:
-    virtual:
-      enabled: true
-
   config:
     import:
       - db-config.yml
