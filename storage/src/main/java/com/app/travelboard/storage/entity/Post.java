@@ -5,16 +5,10 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import static jakarta.persistence.GenerationType.IDENTITY;
-
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Post extends BaseEntity {
-
-    @Id
-    @GeneratedValue(strategy = IDENTITY)
-    private Long id;
 
     @ManyToOne
     @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name = "FK_post_user_id"))
@@ -23,13 +17,16 @@ public class Post extends BaseEntity {
     @Column(length = 50)
     private String location;
 
+    @Column
     private String title;
 
     @Lob
     @Column(columnDefinition = "MEDIUMTEXT")
     private String content;
 
+    @Column
     private int views;
 
+    @Column
     private boolean needPremium;
 }
