@@ -1,4 +1,10 @@
 spring:
+  jpa:
+    open-in-view: false
+    properties:
+      hibernate:
+        default_batch_fetch_size: 100
+        ddl-auto: none
   config:
     import:
       - db-${spring.profiles.active}.yml
