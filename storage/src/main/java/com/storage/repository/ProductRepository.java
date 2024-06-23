@@ -1,6 +1,6 @@
-package com.app.travelboard.storage.repository;
+package com.storage.repository;
 
-import com.app.travelboard.storage.entity.Product;
+import com.storage.entity.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ProductRepository extends JpaRepository<Product, Long> {
