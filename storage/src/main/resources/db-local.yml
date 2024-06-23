@@ -1,9 +1,8 @@
 spring:
   jpa:
-    open-in-view: false
     properties:
       hibernate:
-        default_batch_fetch_size: 100
+        dialect: org.hibernate.dialect.MySQLDialect
         ddl-auto: create
         format_sql: true
         show_sql: true
