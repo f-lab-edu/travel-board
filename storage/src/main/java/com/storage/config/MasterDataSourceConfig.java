@@ -17,7 +17,7 @@ public class MasterDataSourceConfig {
     }
 
     @Bean
-    public HikariDataSource mainDataSource(@Qualifier("masterHikariConfig") HikariConfig hikariConfig) {
+    public HikariDataSource masterDataSource(@Qualifier("masterHikariConfig") HikariConfig hikariConfig) {
         return new HikariDataSource(hikariConfig);
     }
 }
