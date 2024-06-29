@@ -7,7 +7,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
-import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -38,11 +37,6 @@ public class User extends BaseEntity {
 
     @Column(length = 300)
     private String bio;
-
-    @PrePersist
-    private void prePersist() {
-
-    }
 
     @Builder
     private User(Account account, String nickname, String profileImageUrl, String bio) {
