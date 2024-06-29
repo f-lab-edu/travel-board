@@ -7,8 +7,10 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -37,4 +39,25 @@ public class User extends BaseEntity {
     @Column(length = 300)
     private String bio;
 
+    @PrePersist
+    private void prePersist() {
+
+    }
+
+    @Builder
+    private User(Account account, String nickname, String profileImageUrl, String bio) {
+        this.account = account;
+        this.nickname = nickname;
+        this.profileImageUrl = profileImageUrl;
+        this.bio = bio;
+    }
+
+    public static User createNew(Account account, String nickname, String profileImageUrl, String bio) {
+        return User.builder()
+                .account(account)
+                .nickname(nickname)
+                .profileImageUrl(profileImageUrl)
+                .bio(bio)
+                .build();
+    }
 }

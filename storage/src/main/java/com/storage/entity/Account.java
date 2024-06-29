@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -25,4 +26,16 @@ public class Account extends BaseEntity {
     @Column
     private String password;
 
+    @Builder
+    private Account(String email, String password) {
+        this.email = email;
+        this.password = password;
+    }
+
+    public static Account createNew(String email, String encodedPassword) {
+        return Account.builder()
+                .email(email)
+                .password(encodedPassword)
+                .build();
+    }
 }
