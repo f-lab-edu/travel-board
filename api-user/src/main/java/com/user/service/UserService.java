@@ -21,11 +21,12 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     @Transactional
-    public void register(UserRegisterServiceRequest request) {
+    public Long register(UserRegisterServiceRequest request) {
         checkDuplicateEmail(request.email());
         Account newAccount = registerAccount(request);
         User newUser = registerUser(request, newAccount);
         updateAuditing(newAccount, newUser);
+        return newUser.getId();
     }
 
     private void updateAuditing(Account account, User user) {
