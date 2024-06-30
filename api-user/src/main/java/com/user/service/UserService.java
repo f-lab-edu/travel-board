@@ -5,7 +5,6 @@ import com.storage.entity.User;
 import com.storage.repository.AccountRepository;
 import com.storage.repository.UserRepository;
 import com.user.controller.request.UserRegisterRequest;
-import com.user.exception.ConflictException;
 import com.user.service.factory.AccountFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -24,7 +23,7 @@ public class UserService {
     @Transactional
     public Long register(UserRegisterRequest request) {
         accountRepository.findByEmail(request.email()).ifPresent(account -> {
-            throw new ConflictException("Email is already in use");
+            throw new IllegalStateException("Email is already in use");
         });
 
         String encodedPassword = passwordEncoder.encode(request.password());
