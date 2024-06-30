@@ -5,6 +5,7 @@ import com.storage.entity.User;
 import com.storage.repository.AccountRepository;
 import com.storage.repository.UserRepository;
 import com.user.exception.ConflictException;
+import com.user.service.factory.AccountFactory;
 import com.user.service.request.UserRegisterServiceRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -23,10 +24,10 @@ public class UserService {
     @Transactional
     public Long register(UserRegisterServiceRequest request) {
         checkDuplicateEmail(request.email());
-        Account newAccount = registerAccount(request);
-        User newUser = registerUser(request, newAccount);
-        updateAuditing(newAccount, newUser);
-        return newUser.getId();
+        Account account = registerAccount(request.password(), request.email());
+        User user = registerUser(request, account);
+        updateAuditing(account, user);
+        return user.getId();
     }
 
     private void updateAuditing(Account account, User user) {
@@ -35,14 +36,14 @@ public class UserService {
     }
 
     private User registerUser(UserRegisterServiceRequest request, Account newAccount) {
-        User newUser = request.toUser(newAccount);
-        return userRepository.save(newUser);
+        User user = request.toUser(newAccount);
+        return userRepository.save(user);
     }
 
-    private Account registerAccount(UserRegisterServiceRequest request) {
-        String encodedPassword = passwordEncoder.encode(request.password());
-        Account newAccount = Account.createNew(request.email(), encodedPassword);
-        return accountRepository.save(newAccount);
+    private Account registerAccount(String password, String email) {
+        String encodedPassword = passwordEncoder.encode(password);
+        Account account = AccountFactory.create(email, encodedPassword);
+        return accountRepository.save(account);
     }
 
     private void checkDuplicateEmail(String email) {
