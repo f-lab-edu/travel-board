@@ -33,12 +33,6 @@ public class UserService {
 
         accountRepository.save(account);
         userRepository.save(user);
-        updateAuditing(account, user);
         return user.getId();
-    }
-
-    private void updateAuditing(Account account, User user) {
-        account.initializedBy(account.getId());
-        user.initializedBy(account.getId());
     }
 }
