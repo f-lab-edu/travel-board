@@ -4,9 +4,9 @@ import com.storage.entity.Account;
 import com.storage.entity.User;
 import com.storage.repository.AccountRepository;
 import com.storage.repository.UserRepository;
+import com.user.controller.request.UserRegisterRequest;
 import com.user.exception.ConflictException;
 import com.user.service.factory.AccountFactory;
-import com.user.service.request.UserRegisterServiceRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -22,7 +22,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     @Transactional
-    public Long register(UserRegisterServiceRequest request) {
+    public Long register(UserRegisterRequest request) {
         checkDuplicateEmail(request.email());
         Account account = registerAccount(request.password(), request.email());
         User user = registerUser(request, account);
@@ -35,7 +35,7 @@ public class UserService {
         user.initializedBy(account.getId());
     }
 
-    private User registerUser(UserRegisterServiceRequest request, Account newAccount) {
+    private User registerUser(UserRegisterRequest request, Account newAccount) {
         User user = request.toUser(newAccount);
         return userRepository.save(user);
     }
