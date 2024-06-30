@@ -23,9 +23,14 @@ public class UserService {
 
     @Transactional
     public Long register(UserRegisterRequest request) {
-        checkDuplicateEmail(request.email());
-        Account account = registerAccount(request.password(), request.email());
-        User user = registerUser(request, account);
+        accountRepository.findByEmail(request.email()).ifPresent(account -> {
+            throw new ConflictException("Email is already in use");
+        });
+        String encodedPassword = passwordEncoder.encode(request.password());
+        Account account = AccountFactory.create(request.email(), encodedPassword);
+        User user = request.toUser(account);
+        accountRepository.save(account);
+        userRepository.save(user);
         updateAuditing(account, user);
         return user.getId();
     }
@@ -33,22 +38,5 @@ public class UserService {
     private void updateAuditing(Account account, User user) {
         account.initializedBy(account.getId());
         user.initializedBy(account.getId());
-    }
-
-    private User registerUser(UserRegisterRequest request, Account newAccount) {
-        User user = request.toUser(newAccount);
-        return userRepository.save(user);
-    }
-
-    private Account registerAccount(String password, String email) {
-        String encodedPassword = passwordEncoder.encode(password);
-        Account account = AccountFactory.create(email, encodedPassword);
-        return accountRepository.save(account);
-    }
-
-    private void checkDuplicateEmail(String email) {
-        accountRepository.findByEmail(email).ifPresent(account -> {
-            throw new ConflictException("Email is already in use");
-        });
     }
 }
