@@ -33,8 +33,4 @@ public abstract class BaseEntity {
     @Column
     private LocalDateTime updatedAt;
 
-    public void initializedBy(Long accountId) {
-        this.createdBy = accountId;
-        this.updatedBy = accountId;
-    }
 }
