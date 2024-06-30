@@ -26,9 +26,11 @@ public class UserService {
         accountRepository.findByEmail(request.email()).ifPresent(account -> {
             throw new ConflictException("Email is already in use");
         });
+
         String encodedPassword = passwordEncoder.encode(request.password());
         Account account = AccountFactory.create(request.email(), encodedPassword);
         User user = request.toUser(account);
+
         accountRepository.save(account);
         userRepository.save(user);
         updateAuditing(account, user);
