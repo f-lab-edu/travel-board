@@ -21,7 +21,6 @@ public class AuthController {
 
     @PostMapping("/signup")
     public ResponseEntity<Void> signup(@RequestBody @Valid UserRegisterRequest request) {
-        request.validate();
         Long userId = userService.register(request.toServiceRequest());
         URI location = URI.create(String.format("/users/%d", userId));
         return ResponseEntity.created(location).build();
