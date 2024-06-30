@@ -45,13 +45,4 @@ public class User extends BaseEntity {
         this.profileImageUrl = profileImageUrl;
         this.bio = bio;
     }
-
-    public static User createNew(Account account, String nickname, String profileImageUrl, String bio) {
-        return User.builder()
-                .account(account)
-                .nickname(nickname)
-                .profileImageUrl(profileImageUrl)
-                .bio(bio)
-                .build();
-    }
 }

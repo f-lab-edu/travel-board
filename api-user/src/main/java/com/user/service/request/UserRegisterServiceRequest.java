@@ -2,6 +2,7 @@ package com.user.service.request;
 
 import com.storage.entity.Account;
 import com.storage.entity.User;
+import com.user.service.factory.UserFactory;
 import lombok.Builder;
 
 @Builder
@@ -14,6 +15,6 @@ public record UserRegisterServiceRequest(
 ) {
 
     public User toUser(Account account) {
-        return User.createNew(account, nickname, profileImageUrl, bio);
+        return UserFactory.create(account, nickname, profileImageUrl, bio);
     }
 }

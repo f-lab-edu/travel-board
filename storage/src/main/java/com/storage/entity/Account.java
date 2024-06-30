@@ -31,11 +31,4 @@ public class Account extends BaseEntity {
         this.email = email;
         this.password = password;
     }
-
-    public static Account createNew(String email, String encodedPassword) {
-        return Account.builder()
-                .email(email)
-                .password(encodedPassword)
-                .build();
-    }
 }
