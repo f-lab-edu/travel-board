@@ -6,10 +6,13 @@ import com.storage.repository.AccountRepository;
 import com.storage.repository.UserRepository;
 import com.user.controller.request.UserRegisterRequest;
 import com.user.service.factory.AccountFactory;
+import com.user.service.factory.UserFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 @Service
 @Transactional(readOnly = true)
@@ -28,7 +31,12 @@ public class UserService {
 
         String encodedPassword = passwordEncoder.encode(request.password());
         Account account = AccountFactory.create(request.email(), encodedPassword);
-        User user = request.toUser(account);
+        User user = UserFactory.create(
+                account,
+                request.nickname(),
+                Optional.ofNullable(request.profileImageUrl()).orElse(""),
+                Optional.ofNullable(request.bio()).orElse("")
+        );
 
         accountRepository.save(account);
         userRepository.save(user);

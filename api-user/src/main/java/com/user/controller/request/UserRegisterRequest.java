@@ -1,9 +1,5 @@
 package com.user.controller.request;
 
-import com.storage.entity.Account;
-import com.storage.entity.User;
-import com.support.utils.StringUtils;
-import com.user.service.factory.UserFactory;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -33,13 +29,4 @@ public record UserRegisterRequest(
         @Size(max = 100)
         String bio
 ) {
-
-    public User toUser(Account account) {
-        return UserFactory.create(
-                account,
-                nickname,
-                StringUtils.checkIfNull(profileImageUrl),
-                StringUtils.checkIfNull(bio)
-        );
-    }
 }
