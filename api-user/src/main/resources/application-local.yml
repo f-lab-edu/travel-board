@@ -1,0 +1,3 @@
+token:
+  refresh:
+    valid-time-in-days: 7

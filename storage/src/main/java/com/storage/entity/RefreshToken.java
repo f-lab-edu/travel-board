@@ -24,7 +24,7 @@ public class RefreshToken {
     @JoinColumn(name = "account_id")
     private Account account;
 
-    @Column(nullable = false)
+    @Column
     private LocalDateTime expiredAt;
 
     @Builder
