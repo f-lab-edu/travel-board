@@ -1,4 +1,4 @@
-package com.user.service.token;
+package com.user.service;
 
 import com.storage.entity.Account;
 import com.storage.entity.RefreshToken;
