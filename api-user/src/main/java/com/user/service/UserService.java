@@ -8,7 +8,6 @@ import com.storage.repository.RefreshTokenRepository;
 import com.storage.repository.UserRepository;
 import com.user.controller.request.UserRegisterRequest;
 import com.user.controller.response.UserRegisterResponse;
-import com.user.service.token.RefreshTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
