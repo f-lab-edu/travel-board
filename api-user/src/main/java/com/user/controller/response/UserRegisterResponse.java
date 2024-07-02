@@ -2,20 +2,20 @@ package com.user.controller.response;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 public record UserRegisterResponse(
         Long userId,
-        String refreshTokenValue,
+        UUID refreshTokenValue,
         LocalDateTime refreshTokenExpiredAt
 ) {
 
-    public static UserRegisterResponse of(Long userId, String tokenValue, LocalDateTime expiredAt) {
+    public static UserRegisterResponse of(Long userId, UUID tokenValue, LocalDateTime expiredAt) {
         return new UserRegisterResponse(userId, tokenValue, expiredAt);
     }
 
-    public long getMaxAgeForCookie() {
+    public Duration getMaxAgeForCookie() {
         LocalDateTime now = LocalDateTime.now();
-        Duration duration = Duration.between(now, refreshTokenExpiredAt);
-        return duration.getSeconds();
+        return Duration.between(now, refreshTokenExpiredAt);
     }
 }
