@@ -2,6 +2,8 @@ package com.storage.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
@@ -11,6 +13,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Getter
@@ -18,7 +21,8 @@ import java.time.LocalDateTime;
 public class RefreshToken {
 
     @Id
-    private String tokenValue;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID tokenValue;
 
     @OneToOne
     @JoinColumn(name = "account_id")
@@ -28,8 +32,7 @@ public class RefreshToken {
     private LocalDateTime expiredAt;
 
     @Builder
-    private RefreshToken(String tokenValue, Account account, LocalDateTime expiredAt) {
-        this.tokenValue = tokenValue;
+    private RefreshToken(Account account, LocalDateTime expiredAt) {
         this.account = account;
         this.expiredAt = expiredAt;
     }

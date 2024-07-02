@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Component
 public class RefreshTokenProvider {
@@ -18,11 +17,9 @@ public class RefreshTokenProvider {
     }
 
     public RefreshToken createToken(Account account) {
-        String uuid = UUID.randomUUID().toString();
         LocalDateTime expiredAt = LocalDateTime.now().plusDays(validTimeInDays);
 
         return RefreshToken.builder()
-                .tokenValue(uuid)
                 .account(account)
                 .expiredAt(expiredAt)
                 .build();

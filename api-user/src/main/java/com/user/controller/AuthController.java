@@ -30,7 +30,7 @@ public class AuthController {
         UserRegisterResponse response = userService.register(request);
         ResponseCookie cookie = cookieProvider.createCookie(
                 REFRESH_TOKEN_COOKIE_NAME,
-                response.refreshTokenValue(),
+                response.refreshTokenValue().toString(),
                 response.getMaxAgeForCookie()
         );
         URI location = URI.create(String.format("/users/%d", response.userId()));
