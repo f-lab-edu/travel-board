@@ -1,0 +1,11 @@
+### 회원가입
+POST http://localhost:8080/auth/signup
+content-type: application/json
+
+{
+  "email": "skekdnwhd@gmail.com",
+  "password": "qwer1234",
+  "nickname": "biotea",
+  "profileImageUrl": "",
+  "bio": "안녕하세요.\n백엔드 개발자 김우종입니다."
+}
