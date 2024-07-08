@@ -6,7 +6,6 @@ import lombok.Getter;
 public class TravelBoardException extends RuntimeException {
 
     private final ErrorType errorType;
-
     private final Object data;
 
     public TravelBoardException(ErrorType errorType) {
