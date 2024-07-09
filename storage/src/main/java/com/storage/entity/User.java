@@ -38,11 +38,15 @@ public class User extends BaseEntity {
     @Column(length = 300)
     private String bio;
 
+    @Column(length = 600)
+    private String refreshToken;
+
     @Builder
-    private User(Account account, String nickname, String profileImageUrl, String bio) {
+    public User(Account account, String nickname, String profileImageUrl, String bio, String refreshToken) {
         this.account = account;
         this.nickname = nickname;
         this.profileImageUrl = profileImageUrl;
         this.bio = bio;
+        this.refreshToken = refreshToken;
     }
 }
