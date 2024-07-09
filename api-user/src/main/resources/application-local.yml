@@ -1,3 +1,4 @@
-token:
-  refresh:
+jwt:
+  refresh-token:
     valid-time-in-days: 7
+    secret: localTestRefreshTokenSecretQWERTYUIOP1234567890

@@ -5,15 +5,14 @@ import com.storage.entity.User;
 import com.storage.repository.AccountRepository;
 import com.storage.repository.UserRepository;
 import com.user.controller.request.UserRegisterRequest;
+import com.user.domain.account.AccountManager;
+import com.user.domain.user.UserManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-
 @Service
-@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class UserService {
 
@@ -22,33 +21,15 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     @Transactional
-    public Long register(UserRegisterRequest request) {
+    public void register(UserRegisterRequest request) {
         accountRepository.findByEmail(request.email()).ifPresent(account -> {
             throw new IllegalStateException("Email is already in use");
         });
 
-        String encodedPassword = passwordEncoder.encode(request.password());
-        Account account = createAccount(request.email(), encodedPassword);
-        User user = createUser(account, request.nickname(), request.profileImageUrl(), request.bio());
+        Account account = AccountManager.create(request.email(), request.password(), passwordEncoder);
+        User user = UserManager.create(account, request.nickname(), request.profileImageUrl(), request.bio());
 
         accountRepository.save(account);
         userRepository.save(user);
-        return user.getId();
-    }
-
-    private Account createAccount(String email, String password) {
-        return Account.builder()
-                .email(email)
-                .password(password)
-                .build();
-    }
-
-    private User createUser(Account account, String nickname, String profileImageUrl, String bio) {
-        return User.builder()
-                .account(account)
-                .nickname(nickname)
-                .profileImageUrl(Optional.ofNullable(profileImageUrl).orElse(""))
-                .bio(Optional.ofNullable(bio).orElse(""))
-                .build();
     }
 }
