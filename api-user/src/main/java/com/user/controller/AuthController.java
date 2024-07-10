@@ -5,12 +5,13 @@ import com.user.service.UserService;
 import com.user.utils.response.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+
+import static org.springframework.http.HttpStatus.CREATED;
 
 @RestController
 @RequiredArgsConstructor
@@ -20,7 +21,7 @@ public class AuthController {
     private final UserService userService;
 
     @PostMapping("/signup")
-    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseStatus(CREATED)
     public ApiResponse<Void> signup(@RequestBody @Valid UserRegisterRequest request) {
         userService.register(request);
         return ApiResponse.success();
