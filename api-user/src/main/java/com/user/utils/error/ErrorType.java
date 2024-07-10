@@ -10,7 +10,8 @@ import org.springframework.http.HttpStatus;
 public enum ErrorType {
 
     DEFAULT_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.E500, "An unexpected error has occurred", LogLevel.ERROR),
-    INVALID_REQUEST(HttpStatus.BAD_REQUEST, ErrorCode.E400, "Request validation failed", LogLevel.INFO);
+    INVALID_REQUEST(HttpStatus.BAD_REQUEST, ErrorCode.E400, "Request validation failed", LogLevel.INFO),
+    DUPLICATED_EMAIL(HttpStatus.CONFLICT, ErrorCode.E409, "Email is already in use", LogLevel.INFO);
 
     private final HttpStatus status;
     private final ErrorCode code;
