@@ -37,7 +37,7 @@ public class GlobalControllerAdvice {
 
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ErrorMessage> handleRuntimeException(RuntimeException e) {
-        log.error("Exception : {}", e.getMessage(), e);
+        log.error("RuntimeException : {}", e.getMessage(), e);
         ErrorMessage message = new ErrorMessage(DEFAULT_ERROR);
         return ResponseEntity.internalServerError().body(message);
     }
