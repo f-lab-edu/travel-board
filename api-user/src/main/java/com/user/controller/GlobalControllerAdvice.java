@@ -1,6 +1,6 @@
 package com.user.controller;
 
-import com.user.utils.error.TravelBoardException;
+import com.user.utils.error.ApplicationException;
 import com.user.utils.response.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -22,12 +22,12 @@ import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 @RestControllerAdvice
 public class GlobalControllerAdvice {
 
-    @ExceptionHandler(TravelBoardException.class)
-    public ResponseEntity<ApiResponse<Void>> handleTravelBoardException(TravelBoardException e) {
+    @ExceptionHandler(ApplicationException.class)
+    public ResponseEntity<ApiResponse<Void>> handleTravelBoardException(ApplicationException e) {
         switch (e.getErrorType().getLogLevel()) {
-            case ERROR -> log.error("TravelBoardException : {}", e.getMessage(), e);
-            case WARN -> log.warn("TravelBoardException : {}", e.getMessage(), e);
-            default -> log.info("TravelBoardException : {}", e.getMessage(), e);
+            case ERROR -> log.error("ApplicationException : {}", e.getMessage(), e);
+            case WARN -> log.warn("ApplicationException : {}", e.getMessage(), e);
+            default -> log.info("ApplicationException : {}", e.getMessage(), e);
         }
         return ResponseEntity.status(e.getErrorType().getStatus())
                 .body(ApiResponse.error(e.getErrorType(), e.getData()));

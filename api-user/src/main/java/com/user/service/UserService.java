@@ -7,7 +7,7 @@ import com.storage.repository.UserRepository;
 import com.user.controller.request.UserRegisterRequest;
 import com.user.domain.account.AccountManager;
 import com.user.domain.user.UserManager;
-import com.user.utils.error.TravelBoardException;
+import com.user.utils.error.ApplicationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -26,7 +26,7 @@ public class UserService {
     @Transactional
     public void register(UserRegisterRequest request) {
         accountRepository.findByEmail(request.email()).ifPresent(account -> {
-            throw new TravelBoardException(DUPLICATED_EMAIL);
+            throw new ApplicationException(DUPLICATED_EMAIL);
         });
 
         Account account = AccountManager.create(request.email(), request.password(), passwordEncoder);
