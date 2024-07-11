@@ -24,26 +24,27 @@ public class GlobalControllerAdvice {
         switch (e.getErrorType().getLogLevel()) {
             case ERROR -> log.error("ApplicationException : {}", e.getMessage(), e);
             case WARN -> log.warn("ApplicationException : {}", e.getMessage(), e);
-            default -> log.info("ApplicationException : {}", e.getMessage(), e);
+            default -> {}
         }
-        return ResponseEntity.status(e.getErrorType().getStatus())
-                .body(new ErrorMessage(e.getErrorType(), e.getData()));
+        ErrorMessage message = new ErrorMessage(e.getErrorType());
+        return ResponseEntity.status(e.getErrorType().getStatus()).body(message);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorMessage> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
-        log.info("MethodArgumentNotValidException : {}", e.getMessage(), e);
-        Map<String, String> validationData = new HashMap<>();
+        Map<String, String> validations = new HashMap<>();
         for (FieldError fieldError : e.getFieldErrors()) {
-            validationData.putIfAbsent(fieldError.getField(), fieldError.getDefaultMessage());
+            validations.putIfAbsent(fieldError.getField(), fieldError.getDefaultMessage());
         }
-        return ResponseEntity.badRequest().body(new ErrorMessage(INVALID_REQUEST, validationData));
+        ErrorMessage message = new ErrorMessage(INVALID_REQUEST, validations);
+        return ResponseEntity.badRequest().body(message);
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorMessage> handleException(Exception e) {
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<ErrorMessage> handleException(RuntimeException e) {
         log.error("Exception : {}", e.getMessage(), e);
-        return ResponseEntity.internalServerError().body(new ErrorMessage(DEFAULT_ERROR));
+        ErrorMessage message = new ErrorMessage(DEFAULT_ERROR);
+        return ResponseEntity.internalServerError().body(message);
     }
 
 }
