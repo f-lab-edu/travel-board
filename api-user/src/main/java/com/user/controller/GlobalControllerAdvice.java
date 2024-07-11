@@ -1,6 +1,6 @@
 package com.user.controller;
 
-import com.user.utils.error.ApplicationException;
+import com.user.utils.error.CommonException;
 import com.user.utils.error.ErrorMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -19,13 +19,8 @@ import static com.user.utils.error.ErrorType.INVALID_REQUEST;
 @RestControllerAdvice
 public class GlobalControllerAdvice {
 
-    @ExceptionHandler(ApplicationException.class)
-    public ResponseEntity<ErrorMessage> handleTravelBoardException(ApplicationException e) {
-        switch (e.getErrorType().getLogLevel()) {
-            case ERROR -> log.error("ApplicationException : {}", e.getMessage(), e);
-            case WARN -> log.warn("ApplicationException : {}", e.getMessage(), e);
-            default -> {}
-        }
+    @ExceptionHandler(CommonException.class)
+    public ResponseEntity<ErrorMessage> handleCommonException(CommonException e) {
         ErrorMessage message = new ErrorMessage(e.getErrorType());
         return ResponseEntity.status(e.getErrorType().getStatus()).body(message);
     }
