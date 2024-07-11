@@ -2,22 +2,24 @@ package com.user.utils.error;
 
 import lombok.Getter;
 
+import java.util.Map;
+
 @Getter
 public class ErrorMessage {
 
-    private final String code;
+    private final int code;
     private final String message;
-    private final Object data;
+    private final Map<String, String> validations;
 
     public ErrorMessage(ErrorType errorType) {
-        this.code = errorType.getCode().name();
+        this.code = errorType.getStatus().value();
         this.message = errorType.getMessage();
-        this.data = null;
+        this.validations = Map.of();
     }
 
-    public ErrorMessage(ErrorType errorType, Object data) {
-        this.code = errorType.getCode().name();
+    public ErrorMessage(ErrorType errorType, Map<String, String> validations) {
+        this.code = errorType.getStatus().value();
         this.message = errorType.getMessage();
-        this.data = data;
+        this.validations = validations;
     }
 }
