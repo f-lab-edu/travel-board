@@ -52,4 +52,53 @@ subprojects {
     tasks.withType<Test> {
         useJUnitPlatform()
     }
+
+    val mainSourceSet = sourceSets.main.get().output
+    val testSourceSet = sourceSets.test.get().output
+
+    sourceSets {
+        create("unitTest") {
+            java.srcDir("src/unitTest/java")
+            resources.srcDir("src/unitTest/resources")
+            compileClasspath += mainSourceSet + testSourceSet
+            runtimeClasspath += mainSourceSet + testSourceSet
+        }
+        create("e2eTest") {
+            java.srcDir("src/e2eTest/java")
+            resources.srcDir("src/e2eTest/resources")
+            compileClasspath += mainSourceSet + testSourceSet
+            runtimeClasspath += mainSourceSet + testSourceSet
+        }
+    }
+
+    configurations {
+        "unitTestImplementation" {
+            extendsFrom(configurations.testImplementation.get())
+        }
+        "unitTestRuntimeOnly" {
+            extendsFrom(configurations.testRuntimeOnly.get())
+        }
+        "e2eTestImplementation" {
+            extendsFrom(configurations.testImplementation.get())
+        }
+        "e2eTestRuntimeOnly" {
+            extendsFrom(configurations.testRuntimeOnly.get())
+        }
+    }
+
+    tasks.register<Test>("unitTest") {
+        description = "Runs unit tests."
+        group = "verification"
+        testClassesDirs = sourceSets["unitTest"].output.classesDirs
+        classpath = sourceSets["unitTest"].runtimeClasspath
+        useJUnitPlatform()
+    }
+
+    tasks.register<Test>("e2eTest") {
+        description = "Runs E2E tests."
+        group = "verification"
+        testClassesDirs = sourceSets["e2eTest"].output.classesDirs
+        classpath = sourceSets["e2eTest"].runtimeClasspath
+        useJUnitPlatform()
+    }
 }
