@@ -59,14 +59,14 @@ subprojects {
 
     sourceSets {
         create("unitTest") {
-            java.srcDir("src/unitTest/java")
-            resources.srcDir("src/unitTest/resources")
+            java.srcDir("src/test/unitTest/java")
+            resources.srcDir("src/test/unitTest/resources")
             compileClasspath += mainOutput + testOutput
             runtimeClasspath += mainOutput + testOutput
         }
         create("e2eTest") {
-            java.srcDir("src/e2eTest/java")
-            resources.srcDir("src/e2eTest/resources")
+            java.srcDir("src/test/e2eTest/java")
+            resources.srcDir("src/test/e2eTest/resources")
             compileClasspath += mainOutput + testOutput
             runtimeClasspath += mainOutput + testOutput
         }
