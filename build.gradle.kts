@@ -104,6 +104,12 @@ subprojects {
         useJUnitPlatform()
     }
 
+    dependencies {
+        add("e2eTestImplementation", "org.testcontainers:junit-jupiter")
+        add("e2eTestImplementation", "org.springframework.boot:spring-boot-testcontainers")
+        add("e2eTestImplementation", "org.testcontainers:mysql")
+    }
+
     tasks.named("test") {
         dependsOn("unitTest", "e2eTest")
     }
