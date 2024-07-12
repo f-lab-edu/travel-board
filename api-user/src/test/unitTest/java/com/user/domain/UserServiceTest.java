@@ -18,7 +18,6 @@ import java.util.Optional;
 
 import static org.mockito.BDDMockito.given;
 
-
 class UserServiceTest extends MockitoTestSupport {
 
     @InjectMocks
