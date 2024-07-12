@@ -54,10 +54,9 @@ subprojects {
     }
 
     // setting for test separation
-    val mainOutput = sourceSets.main.get().output
-    val testOutput = sourceSets.test.get().output
-
     sourceSets {
+        val mainOutput = sourceSets.main.get().output
+        val testOutput = sourceSets.test.get().output
         create("unitTest") {
             java.srcDir("src/test/unitTest/java")
             resources.srcDir("src/test/unitTest/resources")
@@ -73,17 +72,19 @@ subprojects {
     }
 
     configurations {
+        val testImplementationConfig = configurations.testImplementation.get()
+        val testRuntimeOnlyConfig = configurations.testRuntimeOnly.get()
         "unitTestImplementation" {
-            extendsFrom(configurations.testImplementation.get())
+            extendsFrom(testImplementationConfig)
         }
         "unitTestRuntimeOnly" {
-            extendsFrom(configurations.testRuntimeOnly.get())
+            extendsFrom(testRuntimeOnlyConfig)
         }
         "e2eTestImplementation" {
-            extendsFrom(configurations.testImplementation.get())
+            extendsFrom(testImplementationConfig)
         }
         "e2eTestRuntimeOnly" {
-            extendsFrom(configurations.testRuntimeOnly.get())
+            extendsFrom(testRuntimeOnlyConfig)
         }
     }
 
