@@ -53,21 +53,22 @@ subprojects {
         useJUnitPlatform()
     }
 
-    val mainSourceSet = sourceSets.main.get().output
-    val testSourceSet = sourceSets.test.get().output
+    // setting for test separation
+    val mainOutput = sourceSets.main.get().output
+    val testOutput = sourceSets.test.get().output
 
     sourceSets {
         create("unitTest") {
             java.srcDir("src/unitTest/java")
             resources.srcDir("src/unitTest/resources")
-            compileClasspath += mainSourceSet + testSourceSet
-            runtimeClasspath += mainSourceSet + testSourceSet
+            compileClasspath += mainOutput + testOutput
+            runtimeClasspath += mainOutput + testOutput
         }
         create("e2eTest") {
             java.srcDir("src/e2eTest/java")
             resources.srcDir("src/e2eTest/resources")
-            compileClasspath += mainSourceSet + testSourceSet
-            runtimeClasspath += mainSourceSet + testSourceSet
+            compileClasspath += mainOutput + testOutput
+            runtimeClasspath += mainOutput + testOutput
         }
     }
 
@@ -100,5 +101,9 @@ subprojects {
         testClassesDirs = sourceSets["e2eTest"].output.classesDirs
         classpath = sourceSets["e2eTest"].runtimeClasspath
         useJUnitPlatform()
+    }
+
+    tasks.named("test") {
+        dependsOn("unitTest", "e2eTest")
     }
 }
