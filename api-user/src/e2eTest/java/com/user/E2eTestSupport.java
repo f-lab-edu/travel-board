@@ -32,7 +32,6 @@ public abstract class E2eTestSupport {
         registry.add("storage.datasource.master.jdbc-url", MY_SQL_CONTAINER::getJdbcUrl);
         registry.add("storage.datasource.master.username", MY_SQL_CONTAINER::getUsername);
         registry.add("storage.datasource.master.password", MY_SQL_CONTAINER::getPassword);
-//        registry.add("spring.jpa.hibernate.ddl-auto", () -> "create");
     }
 
     @BeforeEach
