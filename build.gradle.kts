@@ -58,14 +58,14 @@ subprojects {
         val mainOutput = sourceSets.main.get().output
         val testOutput = sourceSets.test.get().output
         create("unitTest") {
-            java.srcDir("src/test/unitTest/java")
-            resources.srcDir("src/test/unitTest/resources")
+            java.srcDir("src/unitTest/java")
+            resources.srcDir("src/unitTest/resources")
             compileClasspath += mainOutput + testOutput
             runtimeClasspath += mainOutput + testOutput
         }
         create("e2eTest") {
-            java.srcDir("src/test/e2eTest/java")
-            resources.srcDir("src/test/e2eTest/resources")
+            java.srcDir("src/e2eTest/java")
+            resources.srcDir("src/e2eTest/resources")
             compileClasspath += mainOutput + testOutput
             runtimeClasspath += mainOutput + testOutput
         }
@@ -108,6 +108,11 @@ subprojects {
         add("e2eTestImplementation", "org.testcontainers:junit-jupiter")
         add("e2eTestImplementation", "org.springframework.boot:spring-boot-testcontainers")
         add("e2eTestImplementation", "org.testcontainers:mysql")
+        add("e2eTestImplementation", "io.rest-assured:rest-assured:5.5.0")
+    }
+
+    tasks.named<ProcessResources>("processE2eTestResources") {
+        duplicatesStrategy = DuplicatesStrategy.INCLUDE
     }
 
     tasks.named("test") {
