@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: api-user-e2e-test
+  jpa:
+    open-in-view: false
+    properties:
+      hibernate:
+        default_batch_fetch_size: 100
+        show_log: true
+        format_sql: true
+    show-sql: true
+    hibernate:
+      ddl-auto: create
+
+jwt:
+  refresh-token:
+    valid-time-in-days: 7
+    secret: e2eTestRefreshTokenSecretQWERTYUIOP1234567890
