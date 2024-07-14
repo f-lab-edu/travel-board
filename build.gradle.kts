@@ -104,13 +104,6 @@ subprojects {
         useJUnitPlatform()
     }
 
-    dependencies {
-        add("e2eTestImplementation", "org.testcontainers:junit-jupiter")
-        add("e2eTestImplementation", "org.springframework.boot:spring-boot-testcontainers")
-        add("e2eTestImplementation", "org.testcontainers:mysql")
-        add("e2eTestImplementation", "io.rest-assured:rest-assured:5.5.0")
-    }
-
     tasks.named<ProcessResources>("processE2eTestResources") {
         duplicatesStrategy = DuplicatesStrategy.INCLUDE
     }

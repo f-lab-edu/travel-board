@@ -15,4 +15,4 @@ spring:
 jwt:
   refresh-token:
     valid-time-in-days: 7
-    secret: e2eTestRefreshTokenSecretQWERTYUIOP1234567890
+    secret: e2eTestRefreshTokenSecretQWERTYUIOP1234567890987
