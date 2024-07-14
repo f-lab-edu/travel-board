@@ -2,7 +2,6 @@ package com.user;
 
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.DynamicPropertyRegistry;
@@ -37,10 +36,5 @@ public abstract class E2eTestSupport {
     @BeforeEach
     void setUp() {
         RestAssured.baseURI = "http://localhost:" + port;
-    }
-
-    @Test
-    void contextLoads() {
-
     }
 }
