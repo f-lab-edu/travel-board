@@ -18,7 +18,7 @@ public class E2eTestSupport {
     private static final DockerImageName MYSQL_IMAGE = DockerImageName.parse("mysql:8");
 
     @Container
-    public static final MySQLContainer<?> MY_SQL_CONTAINER = new MySQLContainer<>(MYSQL_IMAGE);
+    static final MySQLContainer<?> MY_SQL_CONTAINER = new MySQLContainer<>(MYSQL_IMAGE);
 
     @LocalServerPort
     int port;
