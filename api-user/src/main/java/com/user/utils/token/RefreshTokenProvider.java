@@ -23,8 +23,7 @@ public class RefreshTokenProvider {
         this.validityInMillisSeconds = validityInDays * 24L * 3600L * 1000L;
     }
 
-    public String generateToken() {
-        Date now = new Date();
+    public String generateToken(Date now) {
         Date expiration = new Date(now.getTime() + validityInMillisSeconds);
         return Jwts.builder()
                 .subject(TOKEN_SUBJECT)
