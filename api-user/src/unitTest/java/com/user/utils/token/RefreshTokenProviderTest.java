@@ -30,7 +30,7 @@ class RefreshTokenProviderTest {
     @DisplayName("리프래쉬 토큰은 정상적으로 생성되어야 한다")
     void generateTokenSuccess() {
         String token = refreshTokenProvider.generateToken(new Date());
-        assertThat(token).isNotNull();
+        assertThat(token).isNotBlank();
     }
 
     @Test

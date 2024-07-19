@@ -2,7 +2,6 @@ package com.user.controller;
 
 import com.user.ControllerTestSupport;
 import com.user.controller.request.UserRegisterRequest;
-import com.user.utils.error.ErrorType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -12,6 +11,7 @@ import org.springframework.http.MediaType;
 
 import java.util.stream.Stream;
 
+import static com.user.utils.error.ErrorType.INVALID_REQUEST;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -45,7 +45,7 @@ class AuthControllerTest extends ControllerTestSupport {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value(400))
-                .andExpect(jsonPath("$.message").value(ErrorType.INVALID_REQUEST.getMessage()))
+                .andExpect(jsonPath("$.message").value(INVALID_REQUEST.getMessage()))
                 .andExpect(jsonPath(String.format("$.validations.%s", validationField)).isNotEmpty());
     }
 
