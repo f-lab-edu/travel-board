@@ -16,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
 
+import static com.user.utils.error.ErrorType.DUPLICATED_EMAIL;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.any;
@@ -61,7 +62,7 @@ class UserServiceTest {
         // when & then
         assertThatThrownBy(() -> userService.register(request))
                 .isInstanceOf(CommonException.class)
-                .hasMessage("Email is already in use");
+                .hasMessage(DUPLICATED_EMAIL.getMessage());
     }
 
     private UserRegisterRequest getUserRegisterRequest() {

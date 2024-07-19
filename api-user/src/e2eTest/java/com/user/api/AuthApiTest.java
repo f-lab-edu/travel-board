@@ -5,7 +5,6 @@ import com.storage.repository.AccountRepository;
 import com.storage.repository.UserRepository;
 import com.user.E2eTestSupport;
 import com.user.controller.request.UserRegisterRequest;
-import com.user.utils.error.ErrorType;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
@@ -18,6 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import static com.user.utils.error.ErrorType.DUPLICATED_EMAIL;
+import static com.user.utils.error.ErrorType.INVALID_REQUEST;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasKey;
@@ -40,7 +41,7 @@ public class AuthApiTest extends E2eTestSupport {
     }
 
     @Test
-    @DisplayName("회원가입이 성공하면 201 Created가 반환되어야 한다")
+    @DisplayName("회원가입이 성공한다")
     void signupSuccess() {
         given()
                 .contentType(ContentType.JSON)
@@ -52,7 +53,7 @@ public class AuthApiTest extends E2eTestSupport {
     }
 
     @Test
-    @DisplayName("회원가입시 이메일이 중복되면 409 Conflict가 반환되면서 실패한다")
+    @DisplayName("회원가입시 이메일이 중복되면 실패한다")
     void signupWithDuplicatedEmail() {
         // given
         Account account = Account.builder().email(VALID_SIGNUP_REQUEST.email()).build();
@@ -66,13 +67,13 @@ public class AuthApiTest extends E2eTestSupport {
         .then()
                 .statusCode(409)
                 .body("code", equalTo(409))
-                .body("message", equalTo(ErrorType.DUPLICATED_EMAIL.getMessage()))
+                .body("message", equalTo(DUPLICATED_EMAIL.getMessage()))
                 .body("validations", equalTo(Map.of()));
     }
 
     @ParameterizedTest(name = "{1} 유효성 검증 실패")
     @MethodSource("provideInvalidSignupRequestBody")
-    @DisplayName("회원가입시 유효하지 않은 요청이면 400 Bad Request가 반환되어야 한다")
+    @DisplayName("회원가입시 유효하지 않은 요청이면 실패한다")
     void signupWithInvalidRequest(UserRegisterRequest request, String validationField) {
         given()
                 .contentType(ContentType.JSON)
@@ -82,7 +83,7 @@ public class AuthApiTest extends E2eTestSupport {
         .then()
                 .statusCode(400)
                 .body("code", equalTo(400))
-                .body("message", equalTo(ErrorType.INVALID_REQUEST.getMessage()))
+                .body("message", equalTo(INVALID_REQUEST.getMessage()))
                 .body("validations", hasKey(validationField));
     }
 
