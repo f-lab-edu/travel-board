@@ -47,6 +47,7 @@ class AuthControllerTest {
         // given
         UserRegisterRequest request = UserRegisterRequestFixtureFactory.create();
         String json = objectMapper.writeValueAsString(request);
+        // UserService.register method is called, but it just returns without actually doing anything.
 
         // when & then
         mockMvc.perform(post("/auth/signup")
