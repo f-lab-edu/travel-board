@@ -5,6 +5,7 @@ import com.storage.entity.User;
 import com.storage.repository.AccountRepository;
 import com.storage.repository.UserRepository;
 import com.user.controller.request.UserRegisterRequest;
+import com.user.support.fixture.dto.request.UserRegisterRequestFixtureFactory;
 import com.user.utils.error.CommonException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -40,7 +41,7 @@ class UserServiceTest {
     @DisplayName("고유한 이메일로 사용자 등록시 사용자와 계정이 생성되어야 한다")
     void registerUserWithUniqueEmail() {
         // given
-        UserRegisterRequest request = getUserRegisterRequest();
+        UserRegisterRequest request = UserRegisterRequestFixtureFactory.create();
         given(accountRepository.findByEmail(request.email())).willReturn(Optional.empty());
         given(passwordEncoder.encode(request.password())).willReturn("encodedPassword");
 
@@ -56,22 +57,12 @@ class UserServiceTest {
     @DisplayName("중복된 이메일로 사용자 등록시 예외가 발생해야 한다")
     void registerUserWithDuplicatedEmail() {
         // given
-        UserRegisterRequest request = getUserRegisterRequest();
+        UserRegisterRequest request = UserRegisterRequestFixtureFactory.create();
         given(accountRepository.findByEmail(request.email())).willReturn(Optional.of(mock(Account.class)));
 
         // when & then
         assertThatThrownBy(() -> userService.register(request))
                 .isInstanceOf(CommonException.class)
                 .hasMessage(DUPLICATED_EMAIL.getMessage());
-    }
-
-    private UserRegisterRequest getUserRegisterRequest() {
-        return new UserRegisterRequest(
-                "email@gmail.com",
-                "password",
-                "nickname",
-                "https://profileImageUrl.png",
-                "bio"
-        );
     }
 }

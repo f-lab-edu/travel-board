@@ -5,13 +5,13 @@ import com.storage.repository.AccountRepository;
 import com.storage.repository.UserRepository;
 import com.user.E2eTestSupport;
 import com.user.controller.request.UserRegisterRequest;
+import com.user.support.fixture.dto.request.UserRegisterRequestFixtureFactory;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.api.TestFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Map;
@@ -22,6 +22,7 @@ import static com.user.utils.error.ErrorType.INVALID_REQUEST;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasKey;
+import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 
 public class AuthApiTest extends E2eTestSupport {
 
@@ -30,9 +31,6 @@ public class AuthApiTest extends E2eTestSupport {
 
     @Autowired
     private UserRepository userRepository;
-
-    private static final UserRegisterRequest VALID_SIGNUP_REQUEST = new UserRegisterRequest("valid@gmail.com",
-            "password", "nickname", "https://profileImageUrl.png", "bio");
 
     @AfterEach
     void tearDown() {
@@ -45,7 +43,7 @@ public class AuthApiTest extends E2eTestSupport {
     void signupSuccess() {
         given()
                 .contentType(ContentType.JSON)
-                .body(VALID_SIGNUP_REQUEST)
+                .body(UserRegisterRequestFixtureFactory.create())
         .when()
                 .post("/auth/signup")
         .then()
@@ -56,12 +54,13 @@ public class AuthApiTest extends E2eTestSupport {
     @DisplayName("회원가입시 이메일이 중복되면 실패한다")
     void signupWithDuplicatedEmail() {
         // given
-        Account account = Account.builder().email(VALID_SIGNUP_REQUEST.email()).build();
+        UserRegisterRequest request = UserRegisterRequestFixtureFactory.create();
+        Account account = Account.builder().email(request.email()).build();
         accountRepository.save(account);
 
         given()
                 .contentType(ContentType.JSON)
-                .body(VALID_SIGNUP_REQUEST)
+                .body(request)
         .when()
                 .post("/auth/signup")
         .then()
@@ -71,34 +70,98 @@ public class AuthApiTest extends E2eTestSupport {
                 .body("validations", equalTo(Map.of()));
     }
 
-    @ParameterizedTest(name = "{1} 유효성 검증 실패")
-    @MethodSource("provideInvalidSignupRequestBody")
-    @DisplayName("회원가입시 유효하지 않은 요청이면 실패한다")
-    void signupWithInvalidRequest(UserRegisterRequest request, String validationField) {
-        given()
-                .contentType(ContentType.JSON)
-                .body(request)
-        .when()
-                .post("/auth/signup")
-        .then()
-                .statusCode(400)
-                .body("code", equalTo(400))
-                .body("message", equalTo(INVALID_REQUEST.getMessage()))
-                .body("validations", hasKey(validationField));
+    @TestFactory
+    @DisplayName("회원가입 시 이메일 유효성 검증에 실패한다")
+    Stream<DynamicTest> emailValidationFailure() {
+        return UserRegisterRequestFixtureFactory.getInvalidEmailRequests().stream()
+                .map(request -> dynamicTest(
+                        String.format("이메일에 %s를 입력하면 유효성 검증이 실패한다", request.email()),
+                        () -> given()
+                                    .contentType(ContentType.JSON)
+                                    .body(request)
+                                .when()
+                                    .post("/auth/signup")
+                                .then()
+                                    .statusCode(400)
+                                    .body("code", equalTo(400))
+                                    .body("message", equalTo(INVALID_REQUEST.getMessage()))
+                                    .body("validations", hasKey("email"))
+                ));
     }
 
-    private static Stream<Arguments> provideInvalidSignupRequestBody() {
-        return Stream.of(
-                Arguments.of(new UserRegisterRequest("", VALID_SIGNUP_REQUEST.password(), VALID_SIGNUP_REQUEST.nickname(), VALID_SIGNUP_REQUEST.profileImageUrl(), VALID_SIGNUP_REQUEST.bio()), "email"),
-                Arguments.of(new UserRegisterRequest("invalid_email", VALID_SIGNUP_REQUEST.password(), VALID_SIGNUP_REQUEST.nickname(), VALID_SIGNUP_REQUEST.profileImageUrl(), VALID_SIGNUP_REQUEST.bio()), "email"),
-                Arguments.of(new UserRegisterRequest(VALID_SIGNUP_REQUEST.email(), "", VALID_SIGNUP_REQUEST.nickname(), VALID_SIGNUP_REQUEST.profileImageUrl(), VALID_SIGNUP_REQUEST.bio()), "password"),
-                Arguments.of(new UserRegisterRequest(VALID_SIGNUP_REQUEST.email(), "short", VALID_SIGNUP_REQUEST.nickname(), VALID_SIGNUP_REQUEST.profileImageUrl(), VALID_SIGNUP_REQUEST.bio()), "password"),
-                Arguments.of(new UserRegisterRequest(VALID_SIGNUP_REQUEST.email(), "longlonglonglonglonglong", VALID_SIGNUP_REQUEST.nickname(), VALID_SIGNUP_REQUEST.profileImageUrl(), VALID_SIGNUP_REQUEST.bio()), "password"),
-                Arguments.of(new UserRegisterRequest(VALID_SIGNUP_REQUEST.email(), "password)(**&&", VALID_SIGNUP_REQUEST.nickname(), VALID_SIGNUP_REQUEST.profileImageUrl(), VALID_SIGNUP_REQUEST.bio()), "password"),
-                Arguments.of(new UserRegisterRequest(VALID_SIGNUP_REQUEST.email(), VALID_SIGNUP_REQUEST.password(), "", VALID_SIGNUP_REQUEST.profileImageUrl(), VALID_SIGNUP_REQUEST.bio()), "nickname"),
-                Arguments.of(new UserRegisterRequest(VALID_SIGNUP_REQUEST.email(), VALID_SIGNUP_REQUEST.password(), "nick name", VALID_SIGNUP_REQUEST.profileImageUrl(), VALID_SIGNUP_REQUEST.bio()), "nickname"),
-                Arguments.of(new UserRegisterRequest(VALID_SIGNUP_REQUEST.email(), VALID_SIGNUP_REQUEST.password(), VALID_SIGNUP_REQUEST.nickname(), "invalid_url", VALID_SIGNUP_REQUEST.bio()), "profileImageUrl"),
-                Arguments.of(new UserRegisterRequest(VALID_SIGNUP_REQUEST.email(), VALID_SIGNUP_REQUEST.password(), VALID_SIGNUP_REQUEST.nickname(), VALID_SIGNUP_REQUEST.profileImageUrl(), "가".repeat(101)), "bio")
-        );
+    @TestFactory
+    @DisplayName("회원가입 시 이메일 유효성 검증에 실패한다")
+    Stream<DynamicTest> passwordValidationFailure() {
+        return UserRegisterRequestFixtureFactory.getInvalidPasswordRequests().stream()
+                .map(request -> dynamicTest(
+                        String.format("비밀번호에 %s를 입력하면 유효성 검증이 실패한다", request.password()),
+                        () -> given()
+                                    .contentType(ContentType.JSON)
+                                    .body(request)
+                                .when()
+                                    .post("/auth/signup")
+                                .then()
+                                    .statusCode(400)
+                                    .body("code", equalTo(400))
+                                    .body("message", equalTo(INVALID_REQUEST.getMessage()))
+                                    .body("validations", hasKey("password"))
+                ));
+    }
+
+    @TestFactory
+    @DisplayName("회원가입 시 닉네임 유효성 검증에 실패한다")
+    Stream<DynamicTest> nicknameValidationFailure() {
+        return UserRegisterRequestFixtureFactory.getInvalidNicknameRequests().stream()
+                .map(request -> dynamicTest(
+                        String.format("닉네임에 %s를 입력하면 유효성 검증이 실패한다", request.nickname()),
+                        () -> given()
+                                    .contentType(ContentType.JSON)
+                                    .body(request)
+                                .when()
+                                    .post("/auth/signup")
+                                .then()
+                                    .statusCode(400)
+                                    .body("code", equalTo(400))
+                                    .body("message", equalTo(INVALID_REQUEST.getMessage()))
+                                    .body("validations", hasKey("nickname"))
+                ));
+    }
+
+    @TestFactory
+    @DisplayName("회원가입 시 프로필 이미지 URL 유효성 검증에 실패한다")
+    Stream<DynamicTest> profileImageUrlValidationFailure() {
+        return UserRegisterRequestFixtureFactory.getInvalidProfileImageUrlRequests().stream()
+                .map(request -> dynamicTest(
+                        String.format("프로필 이미지 URL에 %s를 입력하면 유효성 검증이 실패한다", request.profileImageUrl()),
+                        () -> given()
+                                    .contentType(ContentType.JSON)
+                                    .body(request)
+                                .when()
+                                    .post("/auth/signup")
+                                .then()
+                                    .statusCode(400)
+                                    .body("code", equalTo(400))
+                                    .body("message", equalTo(INVALID_REQUEST.getMessage()))
+                                    .body("validations", hasKey("profileImageUrl"))
+                ));
+    }
+
+    @TestFactory
+    @DisplayName("회원가입 시 소개글 유효성 검증에 실패한다")
+    Stream<DynamicTest> bioValidationFailure() {
+        return UserRegisterRequestFixtureFactory.getInvalidBioRequests().stream()
+                .map(request -> dynamicTest(
+                        String.format("소개에 %s를 입력하면 유효성 검증이 실패한다", request.bio()),
+                        () -> given()
+                                    .contentType(ContentType.JSON)
+                                    .body(request)
+                                .when()
+                                    .post("/auth/signup")
+                                .then()
+                                    .statusCode(400)
+                                    .body("code", equalTo(400))
+                                    .body("message", equalTo(INVALID_REQUEST.getMessage()))
+                                    .body("validations", hasKey("bio"))
+                ));
     }
 }
