@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.user.controller.request.UserRegisterRequest;
 import com.user.service.UserService;
 import com.user.support.fixture.dto.request.UserRegisterRequestFixtureFactory;
+import com.user.utils.error.CommonException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
@@ -16,8 +17,11 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.stream.Stream;
 
+import static com.user.utils.error.ErrorType.DEFAULT_ERROR;
+import static com.user.utils.error.ErrorType.DUPLICATED_EMAIL;
 import static com.user.utils.error.ErrorType.INVALID_REQUEST;
 import static org.junit.jupiter.api.DynamicTest.dynamicTest;
+import static org.mockito.Mockito.doThrow;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -50,6 +54,40 @@ class AuthControllerTest {
                         .contentType(APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isCreated());
+    }
+
+    @Test
+    @DisplayName("userService에서 예상할 수 없는 예외가 발생하면 500 Internal Server Error 응답이 반환되어야 한다")
+    void signupFailureWhenUserServiceThrowException() throws Exception {
+        // given
+        UserRegisterRequest request = UserRegisterRequestFixtureFactory.create();
+        String json = objectMapper.writeValueAsString(request);
+        doThrow(new RuntimeException()).when(userService).register(request);
+
+        // when & then
+        mockMvc.perform(post("/auth/signup")
+                        .contentType(APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isInternalServerError())
+                .andExpect(jsonPath("$.code").value(500))
+                .andExpect(jsonPath("$.message").value(DEFAULT_ERROR.getMessage()));
+    }
+
+    @Test
+    @DisplayName("userService.register()에서 Duplicated Email 예외가 발생하면 409 Conflict 응답이 반환되어야 한다")
+    void signupFailureWhenUserServiceThrowCommonException() throws Exception {
+        // given
+        UserRegisterRequest request = UserRegisterRequestFixtureFactory.create();
+        String json = objectMapper.writeValueAsString(request);
+        doThrow(new CommonException(DUPLICATED_EMAIL)).when(userService).register(request);
+
+        // when & then
+        mockMvc.perform(post("/auth/signup")
+                        .contentType(APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.code").value(409))
+                .andExpect(jsonPath("$.message").value(DUPLICATED_EMAIL.getMessage()));
     }
 
     @TestFactory
