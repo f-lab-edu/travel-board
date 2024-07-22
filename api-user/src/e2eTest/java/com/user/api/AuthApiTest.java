@@ -90,7 +90,7 @@ public class AuthApiTest extends E2eTestSupport {
     }
 
     @TestFactory
-    @DisplayName("회원가입 시 이메일 유효성 검증에 실패한다")
+    @DisplayName("회원가입 시 패스워드 유효성 검증에 실패한다")
     Stream<DynamicTest> passwordValidationFailure() {
         return UserRegisterRequestFixtureFactory.getInvalidPasswordRequests().stream()
                 .map(request -> dynamicTest(
