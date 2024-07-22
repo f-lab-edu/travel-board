@@ -1,13 +1,19 @@
 package com.user.controller;
 
-import com.user.ControllerTestSupport;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.user.controller.request.UserRegisterRequest;
+import com.user.service.UserService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.stream.Stream;
 
@@ -17,7 +23,20 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-class AuthControllerTest extends ControllerTestSupport {
+@WebMvcTest(
+        controllers = AuthController.class,
+        excludeAutoConfiguration = SecurityAutoConfiguration.class
+)
+class AuthControllerTest {
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @MockBean
+    private UserService userService;
 
     private static final UserRegisterRequest VALID_SIGNUP_REQUEST = new UserRegisterRequest("valid@gmail.com",
             "password", "nickname", "https://profileImageUrl.png", "bio");
