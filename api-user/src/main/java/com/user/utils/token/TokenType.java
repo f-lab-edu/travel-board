@@ -6,6 +6,7 @@ import java.util.EnumMap;
 import java.util.Map;
 
 public enum TokenType {
+
     ACCESS,
     REFRESH;
 
