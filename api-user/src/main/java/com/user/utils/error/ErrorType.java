@@ -21,7 +21,9 @@ public enum ErrorType {
     INVALID_REQUEST(BAD_REQUEST, "Request validation failed", INFO),
     DUPLICATED_EMAIL(CONFLICT, "Email is already in use", INFO),
     USER_NOT_FOUND(NOT_FOUND, "User not found", INFO),
-    LOGIN_FAIL(UNAUTHORIZED, "Email and password are incorrect", INFO);
+    LOGIN_FAIL(UNAUTHORIZED, "Email and password are incorrect", INFO),
+    TOKEN_EXPIRED(UNAUTHORIZED, "Token has expired", INFO),
+    INVALID_TOKEN(UNAUTHORIZED, "Token is invalid", INFO);
 
     private final HttpStatus status;
     private final String message;
