@@ -13,6 +13,9 @@ spring:
       ddl-auto: create
 
 jwt:
+  access-token:
+    valid-time: 30m
+    secret: end2eTestAccessTokenSecretQWERTYUIOP12345678900
   refresh-token:
-    valid-time-in-days: 7
-    secret: e2eTestRefreshTokenSecretQWERTYUIOP1234567890987
+    valid-time: 7d
+    secret: end2eTestRefreshTokenSecretQWERTYUIOP1234567890
