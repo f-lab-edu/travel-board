@@ -18,8 +18,8 @@ public class TokenProperties {
     public TokenProperties(TokenProperty accessToken, TokenProperty refreshToken) {
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
-        TokenType.TOKEN_TYPE_TO_TOKEN_PROPERTY.put(TokenType.ACCESS, accessToken);
-        TokenType.TOKEN_TYPE_TO_TOKEN_PROPERTY.put(TokenType.REFRESH, refreshToken);
+        TokenType.ACCESS.setTokenProperty(accessToken);
+        TokenType.REFRESH.setTokenProperty(refreshToken);
     }
 
     @Getter

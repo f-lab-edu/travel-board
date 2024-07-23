@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.storage.entity.User;
 import com.user.config.UserPrincipal;
 import com.user.controller.request.LoginRequest;
-import com.user.controller.response.TokenResponse;
+import com.user.utils.token.TokenResponse;
 import com.user.utils.error.ErrorMessage;
 import com.user.utils.token.JwtTokenProvider;
 import com.user.utils.token.TokenType;

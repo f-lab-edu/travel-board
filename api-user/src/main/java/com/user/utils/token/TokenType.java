@@ -1,5 +1,7 @@
 package com.user.utils.token;
 
+import com.user.utils.token.TokenProperties.TokenProperty;
+
 import java.util.EnumMap;
 import java.util.Map;
 
@@ -7,10 +9,14 @@ public enum TokenType {
     ACCESS,
     REFRESH;
 
-    public static final Map<TokenType, TokenProperties.TokenProperty> TOKEN_TYPE_TO_TOKEN_PROPERTY =
+    private static final Map<TokenType, TokenProperty> TOKEN_TYPE_TO_TOKEN_PROPERTY =
             new EnumMap<>(TokenType.class);
 
-    public TokenProperties.TokenProperty getTokenProperty() {
+    public TokenProperty getTokenProperty() {
         return TOKEN_TYPE_TO_TOKEN_PROPERTY.get(this);
+    }
+
+    public void setTokenProperty(TokenProperty tokenProperty) {
+        TOKEN_TYPE_TO_TOKEN_PROPERTY.put(this, tokenProperty);
     }
 }
