@@ -15,7 +15,7 @@ import static org.assertj.core.api.Assertions.within;
 
 class RefreshTokenProviderTest {
 
-    private RefreshTokenProvider refreshTokenProvider;
+    private JwtTokenProvider refreshTokenProvider;
     private String secret;
     private long validityInDays;
 
@@ -23,7 +23,7 @@ class RefreshTokenProviderTest {
     void setUp() {
         this.secret = "testRefreshTokenSecrettestRefreshTokenSecrettestRefreshTokenSecret";
         this.validityInDays = 1;
-        this.refreshTokenProvider = new RefreshTokenProvider(secret, validityInDays);
+        this.refreshTokenProvider = new JwtTokenProvider(secret, validityInDays);
     }
 
     @Test

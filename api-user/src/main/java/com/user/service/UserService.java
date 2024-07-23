@@ -8,6 +8,7 @@ import com.user.controller.request.UserRegisterRequest;
 import com.user.domain.account.AccountManager;
 import com.user.domain.user.UserManager;
 import com.user.utils.error.CommonException;
+import com.user.utils.error.ErrorType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -34,5 +35,11 @@ public class UserService {
 
         accountRepository.save(account);
         userRepository.save(user);
+    }
+
+    @Transactional(readOnly = true)
+    public User getUser(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new CommonException(ErrorType.USER_NOT_FOUND));
     }
 }

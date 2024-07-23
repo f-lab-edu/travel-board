@@ -1,4 +1,7 @@
 jwt:
+  access-token:
+    valid-time: 30m
+    secret: localTestAccessTokenSecretQWERTYUIOP12345678900
   refresh-token:
-    valid-time-in-days: 7
+    valid-time: 7d
     secret: localTestRefreshTokenSecretQWERTYUIOP1234567890
