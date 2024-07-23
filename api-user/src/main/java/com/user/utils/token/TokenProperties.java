@@ -4,7 +4,7 @@ import io.jsonwebtoken.security.Keys;
 import lombok.Getter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-import java.security.Key;
+import javax.crypto.SecretKey;
 import java.time.Duration;
 import java.util.Base64;
 
@@ -31,7 +31,7 @@ public class TokenProperties {
     @Getter
     public static class TokenProperty {
 
-        private final Key secretKey;
+        private final SecretKey secretKey;
         private final long validityInMillisSeconds;
 
         public TokenProperty(String secret, Duration validTime) {
