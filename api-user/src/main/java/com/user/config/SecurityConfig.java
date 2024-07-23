@@ -2,6 +2,9 @@ package com.user.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.user.config.filter.EmailPasswordAuthFilter;
+import com.user.config.handler.LoginFailHandler;
+import com.user.config.handler.LoginSuccessHandler;
+import com.user.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,7 +32,8 @@ public class SecurityConfig {
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return web -> web.ignoring()
-                .requestMatchers("/error");
+                .requestMatchers("/error")
+                .requestMatchers("/h2-console/**");
     }
 
     @Bean
@@ -43,9 +47,11 @@ public class SecurityConfig {
     }
 
     @Bean
-    public EmailPasswordAuthFilter emailPasswordAuthFilter(AuthenticationManager authenticationManager) {
+    public EmailPasswordAuthFilter emailPasswordAuthFilter(AuthenticationManager authenticationManager, AuthService authService) {
         EmailPasswordAuthFilter filter = new EmailPasswordAuthFilter("/auth/login", objectMapper);
         filter.setAuthenticationManager(authenticationManager);
+        filter.setAuthenticationSuccessHandler(new LoginSuccessHandler(objectMapper, authService));
+        filter.setAuthenticationFailureHandler(new LoginFailHandler(objectMapper));
         return filter;
     }
 

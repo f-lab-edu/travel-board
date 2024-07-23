@@ -13,7 +13,7 @@ public class AuditorAwareImpl implements AuditorAware<Long> {
     @Override
     public Optional<Long> getCurrentAuditor() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated()) {
+        if (authentication == null || !authentication.isAuthenticated() || !(authentication.getPrincipal() instanceof UserPrincipal)) {
             return Optional.empty();
         }
         Long currentAccountId = getCurrentAccountId(authentication);
@@ -21,10 +21,7 @@ public class AuditorAwareImpl implements AuditorAware<Long> {
     }
 
     private Long getCurrentAccountId(Authentication authentication) {
-        /*
-         TODO login feature 진행시 principal에서 accountId를 가져오도록 수정
-              현재 principal이 anonymousUser로 들어오고 있음
-         */
-        return -1L;
+        UserPrincipal principal = (UserPrincipal) authentication.getPrincipal();
+        return principal.getAccountId();
     }
 }
