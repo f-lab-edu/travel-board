@@ -23,7 +23,3 @@ content-type: application/json
     client.global.set("accessToken", response.body.accessToken);
     client.global.set("refreshToken", response.body.refreshToken);
 %}
-
-### ping
-GET http://localhost:8080/auth/ping
-Authorization: Bearer hello

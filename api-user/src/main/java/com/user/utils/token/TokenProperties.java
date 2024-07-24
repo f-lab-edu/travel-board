@@ -18,7 +18,7 @@ public class TokenProperties {
     /**
      * This constructor associates the provided token properties with their respective {@link TokenType}.
      *
-     * @param accessToken The properties for the access-token, including the secret key and valid-time period.
+     * @param accessToken  The properties for the access-token, including the secret key and valid-time period.
      * @param refreshToken The properties for the refresh-token, including the secret key and valid-time period.
      */
     public TokenProperties(TokenProperty accessToken, TokenProperty refreshToken) {
