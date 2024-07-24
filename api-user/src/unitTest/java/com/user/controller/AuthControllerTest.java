@@ -1,7 +1,9 @@
 package com.user.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.user.config.SecurityConfig;
 import com.user.controller.request.UserRegisterRequest;
+import com.user.service.AuthService;
 import com.user.service.UserService;
 import com.user.support.fixture.dto.request.UserRegisterRequestFixtureFactory;
 import com.user.utils.error.CommonException;
@@ -10,9 +12,9 @@ import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.stream.Stream;
@@ -27,7 +29,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(controllers = AuthController.class, excludeAutoConfiguration = SecurityAutoConfiguration.class)
+@WebMvcTest(controllers = AuthController.class)
+@Import(SecurityConfig.class)
 class AuthControllerTest {
 
     @Autowired
@@ -38,6 +41,9 @@ class AuthControllerTest {
 
     @MockBean
     private UserService userService;
+
+    @MockBean
+    private AuthService authService;
 
     @Test
     @DisplayName("회원가입이 성공하면 201 Created 응답이 반환되어야 한다")
