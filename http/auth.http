@@ -19,8 +19,11 @@ content-type: application/json
   "password": "qwer1234"
 }
 
-> {% client.global.set("accessToken", response.body.accessToken); %}
+> {%
+    client.global.set("accessToken", response.body.accessToken);
+    client.global.set("refreshToken", response.body.refreshToken);
+%}
 
 ### ping
 GET http://localhost:8080/auth/ping
-Authorization: Bearer {{accessToken}}
+Authorization: Bearer hello
