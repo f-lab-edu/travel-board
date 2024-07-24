@@ -7,6 +7,7 @@ import com.user.service.AuthService;
 import com.user.service.UserService;
 import com.user.support.fixture.dto.request.UserRegisterRequestFixtureFactory;
 import com.user.utils.error.CommonException;
+import com.user.utils.token.JwtTokenProvider;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
@@ -44,6 +45,9 @@ class AuthControllerTest {
 
     @MockBean
     private AuthService authService;
+
+    @MockBean
+    private JwtTokenProvider jwtTokenProvider;
 
     @Test
     @DisplayName("회원가입이 성공하면 201 Created 응답이 반환되어야 한다")

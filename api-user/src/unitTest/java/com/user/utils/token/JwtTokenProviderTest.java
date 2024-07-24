@@ -75,6 +75,10 @@ class JwtTokenProviderTest {
         assertThat(result).isEqualTo(tokenPayload);
     }
 
+    /**
+     * expired token will throw ExpiredJwtException
+     * it should be caught and rethrown as CommonException(ErrorType.TOKEN_EXPIRED)
+     */
     @Test
     @DisplayName("만료된 토큰은 TOKEN_EXPIRED 에러를 발생시킨다")
     void expiredToken() {
@@ -89,18 +93,12 @@ class JwtTokenProviderTest {
                 .hasMessage(ErrorType.TOKEN_EXPIRED.getMessage());
     }
 
-    @Test
-    @DisplayName("형식이 잘못된 토큰은 INVALID_TOKEN 에러를 발생시킨다")
-    void invalidToken() {
-        // given
-        String token = "invalid.token.string";
-
-        // when & then
-        assertThatThrownBy(() -> jwtTokenProvider.getPayload(access, token))
-                .isInstanceOf(CommonException.class)
-                .hasMessage(ErrorType.INVALID_TOKEN.getMessage());
-    }
-
+    /**
+     * invalid token(header, payload) format will throw MalformedJwtException
+     * invalid token(signature) will throw SignatureException
+     * unsupported jwt will throw UnsupportedJwtException
+     * it should be caught and rethrown as CommonException(ErrorType.INVALID_TOKEN)
+     */
     @TestFactory
     Stream<DynamicTest> invalidTokenFormatThrowsInvalidTokenError() {
         // given
@@ -114,22 +112,48 @@ class JwtTokenProviderTest {
                                 .hasMessage(ErrorType.INVALID_TOKEN.getMessage())));
     }
 
+    /**
+     * empty string token will throw IllegalArgumentException
+     * it should be caught and rethrown as CommonException(ErrorType.INVALID_TOKEN)
+     */
     @TestFactory
-    Stream<DynamicTest> blankStringTokenThrowsInvalidTokenError() {
+    Stream<DynamicTest> emptyStringTokenThrowsInvalidTokenError() {
         // given
         List<String> tokens = List.of("", " ");
 
         // when & then
         return tokens.stream()
-                .map(token -> dynamicTest("토큰이 Blank 문자열이면 INVALID_TOKEN 에러를 발생시킨다",
+                .map(token -> dynamicTest("토큰이 empty 문자열이면 INVALID_TOKEN 에러를 발생시킨다",
                         () -> assertThatThrownBy(() -> jwtTokenProvider.getPayload(access, token))
                                 .isInstanceOf(CommonException.class)
                                 .hasMessage(ErrorType.INVALID_TOKEN.getMessage())));
     }
 
+    /**
+     * null token will throw IllegalArgumentException
+     * it should be caught and rethrown as CommonException(ErrorType.INVALID_TOKEN)
+     */
     @Test
-    @DisplayName("미래에 만료되는 토큰은 유효하다")
-    void tokenWithFutureExpirationIsValid() {
+    @DisplayName("null 토큰은 INVALID_TOKEN 에러를 발생시킨다")
+    void nullStringTokenThrowsInvalidTokenError() {
+        // given
+        String token = null;
+
+        // when & then
+        assertThatThrownBy(() -> jwtTokenProvider.getPayload(access, token))
+                .isInstanceOf(CommonException.class)
+                .hasMessage(ErrorType.INVALID_TOKEN.getMessage());
+    }
+
+    @Test
+    @DisplayName("현재 알 수 없는 Token 에러는 UNAUTHORIZED_TOKEN 에러를 발생시킨다")
+    void jwtTokenProviderThrowsUnauthorizedTokenError() {
+        // jwtTokenProvider.getPayload(access, token) will throw CommonException(ErrorType.UNAUTHORIZED_TOKEN)
+    }
+
+    @Test
+    @DisplayName("미래에 생성되는 토큰은 유효하다")
+    void tokenWithFutureGeneratedIsValid() {
         // given
         TokenPayload tokenPayload = new TokenPayload("email@gmail.com", 1L, 1L);
         Date futureDate = new Date(System.currentTimeMillis() + 3600000);
