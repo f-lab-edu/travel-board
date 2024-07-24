@@ -24,5 +24,5 @@ dependencies {
     e2eTestImplementation("org.springframework.boot:spring-boot-testcontainers")
     e2eTestImplementation("org.testcontainers:mysql")
     e2eTestImplementation("io.rest-assured:rest-assured:$restAssuredVersion")
-    testImplementation("org.springframework.security:spring-security-test")
+    unitTestImplementation("org.springframework.security:spring-security-test")
 }
