@@ -3,6 +3,7 @@ package com.user.config.handler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.user.config.UserPrincipal;
 import com.user.service.AuthService;
+import com.user.utils.token.TokenPayload;
 import com.user.utils.token.TokenResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -29,8 +30,8 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
         response.setStatus(SC_OK);
 
         UserPrincipal principal = (UserPrincipal) authentication.getPrincipal();
-        Long userId = principal.getUserId();
-        TokenResponse tokenResponse = authService.createTokens(userId);
+        TokenPayload tokenPayload = TokenPayload.of(principal.getUsername(), principal.getUserId(), principal.getAccountId());
+        TokenResponse tokenResponse = authService.createTokens(tokenPayload);
         objectMapper.writeValue(response.getWriter(), tokenResponse);
     }
 }

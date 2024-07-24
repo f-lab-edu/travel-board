@@ -18,3 +18,9 @@ content-type: application/json
   "email": "skekdnwhd@gmail.com",
   "password": "qwer1234"
 }
+
+> {% client.global.set("accessToken", response.body.accessToken); %}
+
+### ping
+GET http://localhost:8080/auth/ping
+Authorization: Bearer {{accessToken}}

@@ -1,5 +1,6 @@
 package com.user.config;
 
+import com.user.utils.token.TokenPayload;
 import lombok.Getter;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -17,5 +18,11 @@ public class UserPrincipal extends User {
         super(user.getAccount().getEmail(), user.getAccount().getPassword(), List.of(new SimpleGrantedAuthority(ROLE_USER)));
         this.accountId = user.getAccount().getId();
         this.userId = user.getId();
+    }
+
+    public UserPrincipal(TokenPayload tokenPayload) {
+        super(tokenPayload.email(), "encoded", List.of(new SimpleGrantedAuthority(ROLE_USER)));
+        this.accountId = tokenPayload.accountId();
+        this.userId = tokenPayload.userId();
     }
 }

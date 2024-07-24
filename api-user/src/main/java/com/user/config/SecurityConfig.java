@@ -2,10 +2,12 @@ package com.user.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.user.config.filter.EmailPasswordAuthFilter;
+import com.user.config.filter.JwtAuthenticationFilter;
 import com.user.config.handler.LoginFailHandler;
 import com.user.config.handler.LoginSuccessHandler;
 import com.user.service.AuthService;
 import com.user.service.UserService;
+import com.user.utils.token.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,6 +16,7 @@ import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -25,6 +28,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration(proxyBeanMethods = false)
 @EnableMethodSecurity
+@EnableWebSecurity(debug = true)
 @RequiredArgsConstructor
 public class SecurityConfig {
 
@@ -38,10 +42,11 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, EmailPasswordAuthFilter emailPasswordAuthFilter) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, EmailPasswordAuthFilter emailPasswordAuthFilter, JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception {
         return http
                 .authorizeHttpRequests(registry -> registry.anyRequest().permitAll())
                 .addFilterBefore(emailPasswordAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .csrf(AbstractHttpConfigurer::disable)
                 .build();
@@ -54,6 +59,11 @@ public class SecurityConfig {
         filter.setAuthenticationSuccessHandler(new LoginSuccessHandler(objectMapper, authService));
         filter.setAuthenticationFailureHandler(new LoginFailHandler(objectMapper));
         return filter;
+    }
+
+    @Bean
+    public JwtAuthenticationFilter jwtAuthenticationFilter(JwtTokenProvider jwtTokenProvider) {
+        return new JwtAuthenticationFilter(jwtTokenProvider);
     }
 
     @Bean
