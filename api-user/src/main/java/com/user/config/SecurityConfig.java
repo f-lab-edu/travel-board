@@ -5,6 +5,7 @@ import com.user.config.filter.EmailPasswordAuthFilter;
 import com.user.config.handler.LoginFailHandler;
 import com.user.config.handler.LoginSuccessHandler;
 import com.user.service.AuthService;
+import com.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -61,6 +62,11 @@ public class SecurityConfig {
         provider.setUserDetailsService(userDetailsService);
         provider.setPasswordEncoder(passwordEncoder);
         return new ProviderManager(provider);
+    }
+
+    @Bean
+    public UserDetailsService userDetailsService(UserService userService) {
+        return new CustomUserDetailsService(userService);
     }
 
     @Bean
