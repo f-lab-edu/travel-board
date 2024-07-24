@@ -40,7 +40,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         if (token.isPresent()) {
             try {
-                TokenPayload tokenPayload = jwtTokenProvider.getUserId(TokenType.ACCESS, token.get());
+                TokenPayload tokenPayload = jwtTokenProvider.getPayload(TokenType.ACCESS, token.get());
                 UserPrincipal principal = new UserPrincipal(tokenPayload);
                 UsernamePasswordAuthenticationToken authenticated = UsernamePasswordAuthenticationToken.authenticated(
                         principal,

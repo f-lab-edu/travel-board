@@ -31,7 +31,7 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public TokenPayload getUserId(TokenType tokenType, String token) {
+    public TokenPayload getPayload(TokenType tokenType, String token) {
         Claims tokenPayload = getClaims(tokenType, token);
         String email = tokenPayload.get("email", String.class);
         Long userId = tokenPayload.get("userId", Long.class);
