@@ -1,6 +1,7 @@
 package com.user.config.filter;
 
 import com.user.config.UserPrincipal;
+import com.user.utils.error.CommonException;
 import com.user.utils.token.JwtTokenProvider;
 import com.user.utils.token.TokenPayload;
 import com.user.utils.token.TokenType;
@@ -14,14 +15,23 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import java.io.IOException;
 import java.util.Optional;
+import java.util.Set;
 
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
+    private final HandlerExceptionResolver resolver;
+    private static final Set<String> EXCLUDED_PATHS = Set.of("/auth/login", "/auth/signup");
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        return EXCLUDED_PATHS.contains(request.getRequestURI());
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -29,12 +39,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         Optional<String> token = extractTokenFromHeader(authorization);
 
         if (token.isPresent()) {
-            TokenPayload tokenPayload = jwtTokenProvider.getUserId(TokenType.ACCESS, token.get());
-            UserPrincipal principal = new UserPrincipal(tokenPayload);
-            UsernamePasswordAuthenticationToken authenticated =
-                    UsernamePasswordAuthenticationToken.authenticated(principal, null, principal.getAuthorities());
+            try {
+                TokenPayload tokenPayload = jwtTokenProvider.getUserId(TokenType.ACCESS, token.get());
+                UserPrincipal principal = new UserPrincipal(tokenPayload);
+                UsernamePasswordAuthenticationToken authenticated = UsernamePasswordAuthenticationToken.authenticated(
+                        principal,
+                        token.get(),
+                        principal.getAuthorities()
+                );
 
-            SecurityContextHolder.getContext().setAuthentication(authenticated);
+                SecurityContextHolder.getContext().setAuthentication(authenticated);
+            } catch (CommonException e) {
+                resolver.resolveException(request, response, null, e);
+                return;
+            }
         }
 
         filterChain.doFilter(request, response);

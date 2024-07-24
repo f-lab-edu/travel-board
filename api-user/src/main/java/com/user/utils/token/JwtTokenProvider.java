@@ -55,7 +55,7 @@ public class JwtTokenProvider {
         } catch (ExpiredJwtException e) {
             throw new CommonException(ErrorType.TOKEN_EXPIRED);
         } catch (JwtException e) {
-            throw new RuntimeException(e);
+            throw new CommonException(ErrorType.UNAUTHORIZED_TOKEN);
         }
     }
 
