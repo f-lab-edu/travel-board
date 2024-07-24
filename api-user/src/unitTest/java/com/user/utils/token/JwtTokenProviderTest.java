@@ -38,51 +38,53 @@ class JwtTokenProviderTest {
         when(access.getTokenProperty()).thenReturn(new TokenProperties.TokenProperty(
                 "unitaTestAccessTokenSecretQWERTYUIOP12345678900",
                 Duration.ofMinutes(30)));
+        when(access.name()).thenReturn("ACCESS");
         when(refresh.getTokenProperty()).thenReturn(new TokenProperties.TokenProperty(
                 "unitrTestAccessTokenSecretQWERTYUIOP12345678900",
                 Duration.ofDays(7)));
+        when(refresh.name()).thenReturn("REFRESH");
     }
 
     @Test
     @DisplayName("Access 토큰을 생성하고 유저 아이디를 추출할 수 있다")
     void generateAccessToken() {
         // given
-        Long userId = 1L;
+        TokenPayload tokenPayload = new TokenPayload("email@gmail.com", 1L, 1L);
         Date now = new Date();
 
         // when
-        String token = jwtTokenProvider.generateToken(access, userId, now);
-        Long result = jwtTokenProvider.getUserId(access, token);
+        String token = jwtTokenProvider.generateToken(access, tokenPayload, now);
+        TokenPayload result = jwtTokenProvider.getPayload(access, token);
 
         // then
-        assertThat(result).isEqualTo(userId);
+        assertThat(result).isEqualTo(tokenPayload);
     }
 
     @Test
     @DisplayName("Refresh 토큰을 생성하고 유저 아이디를 추출할 수 있다")
     void generateRefreshToken() {
         // given
-        Long userId = 1L;
+        TokenPayload tokenPayload = new TokenPayload("email@gmail.com", 1L, 1L);
         Date now = new Date();
 
         // when
-        String token = jwtTokenProvider.generateToken(refresh, userId, now);
-        Long result = jwtTokenProvider.getUserId(refresh, token);
+        String token = jwtTokenProvider.generateToken(refresh, tokenPayload, now);
+        TokenPayload result = jwtTokenProvider.getPayload(refresh, token);
 
         // then
-        assertThat(result).isEqualTo(userId);
+        assertThat(result).isEqualTo(tokenPayload);
     }
 
     @Test
     @DisplayName("만료된 토큰은 TOKEN_EXPIRED 에러를 발생시킨다")
     void expiredToken() {
         // given
-        Long userId = 1L;
+        TokenPayload tokenPayload = new TokenPayload("email@gmail.com", 1L, 1L);
         Date now = new Date(1721396135444L);
-        String token = jwtTokenProvider.generateToken(access, userId, now);
+        String token = jwtTokenProvider.generateToken(access, tokenPayload, now);
 
         // when & then
-        assertThatThrownBy(() -> jwtTokenProvider.getUserId(access, token))
+        assertThatThrownBy(() -> jwtTokenProvider.getPayload(access, token))
                 .isInstanceOf(CommonException.class)
                 .hasMessage(ErrorType.TOKEN_EXPIRED.getMessage());
     }
@@ -94,7 +96,7 @@ class JwtTokenProviderTest {
         String token = "invalid.token.string";
 
         // when & then
-        assertThatThrownBy(() -> jwtTokenProvider.getUserId(access, token))
+        assertThatThrownBy(() -> jwtTokenProvider.getPayload(access, token))
                 .isInstanceOf(CommonException.class)
                 .hasMessage(ErrorType.INVALID_TOKEN.getMessage());
     }
@@ -107,7 +109,7 @@ class JwtTokenProviderTest {
         // when & then
         return tokens.stream()
                 .map(token -> dynamicTest("형식이 잘못된 토큰이면 INVALID_TOKEN 에러를 발생시킨다",
-                        () -> assertThatThrownBy(() -> jwtTokenProvider.getUserId(access, token))
+                        () -> assertThatThrownBy(() -> jwtTokenProvider.getPayload(access, token))
                                 .isInstanceOf(CommonException.class)
                                 .hasMessage(ErrorType.INVALID_TOKEN.getMessage())));
     }
@@ -120,7 +122,7 @@ class JwtTokenProviderTest {
         // when & then
         return tokens.stream()
                 .map(token -> dynamicTest("토큰이 Blank 문자열이면 INVALID_TOKEN 에러를 발생시킨다",
-                        () -> assertThatThrownBy(() -> jwtTokenProvider.getUserId(access, token))
+                        () -> assertThatThrownBy(() -> jwtTokenProvider.getPayload(access, token))
                                 .isInstanceOf(CommonException.class)
                                 .hasMessage(ErrorType.INVALID_TOKEN.getMessage())));
     }
@@ -129,14 +131,14 @@ class JwtTokenProviderTest {
     @DisplayName("미래에 만료되는 토큰은 유효하다")
     void tokenWithFutureExpirationIsValid() {
         // given
-        Long userId = 1L;
+        TokenPayload tokenPayload = new TokenPayload("email@gmail.com", 1L, 1L);
         Date futureDate = new Date(System.currentTimeMillis() + 3600000);
-        String token = jwtTokenProvider.generateToken(access, userId, futureDate);
+        String token = jwtTokenProvider.generateToken(access, tokenPayload, futureDate);
 
         // when
-        Long result = jwtTokenProvider.getUserId(access, token);
+        TokenPayload result = jwtTokenProvider.getPayload(access, token);
 
         // then
-        assertThat(result).isEqualTo(userId);
+        assertThat(result).isEqualTo(tokenPayload);
     }
 }
