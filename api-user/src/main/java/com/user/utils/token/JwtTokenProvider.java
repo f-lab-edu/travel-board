@@ -30,11 +30,8 @@ public class JwtTokenProvider {
     }
 
     public TokenPayload getPayload(TokenType tokenType, String token) {
-        Claims tokenPayload = getClaims(tokenType, token);
-        String email = tokenPayload.get("email", String.class);
-        Long userId = tokenPayload.get("userId", Long.class);
-        Long accountId = tokenPayload.get("accountId", Long.class);
-        return TokenPayload.of(email, userId, accountId);
+        Claims claims = getClaims(tokenType, token);
+        return TokenPayload.from(claims);
     }
 
     private Claims getClaims(TokenType tokenType, String token) {

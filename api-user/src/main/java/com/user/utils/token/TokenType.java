@@ -10,8 +10,7 @@ public enum TokenType {
     ACCESS,
     REFRESH;
 
-    private static final Map<TokenType, TokenProperty> TOKEN_TYPE_TO_TOKEN_PROPERTY =
-            new EnumMap<>(TokenType.class);
+    private static final Map<TokenType, TokenProperty> TOKEN_TYPE_TO_TOKEN_PROPERTY = new EnumMap<>(TokenType.class);
 
     public TokenProperty getTokenProperty() {
         return TOKEN_TYPE_TO_TOKEN_PROPERTY.get(this);
