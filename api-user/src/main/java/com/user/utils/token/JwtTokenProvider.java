@@ -42,9 +42,7 @@ public class JwtTokenProvider {
                     .parseSignedClaims(token)
                     .getPayload();
             String subject = claims.getSubject();
-            if (isIncorrectSubject(tokenType, subject)) {
-                throw new CommonException(ErrorType.INVALID_TOKEN);
-            }
+            checkSubject(tokenType, subject);
             return claims;
         } catch (MalformedJwtException | SignatureException | UnsupportedJwtException | IllegalArgumentException e) {
             throw new CommonException(ErrorType.INVALID_TOKEN);
@@ -55,7 +53,9 @@ public class JwtTokenProvider {
         }
     }
 
-    private boolean isIncorrectSubject(TokenType tokenType, String subject) {
-        return subject == null || !subject.equals(tokenType.name());
+    private void checkSubject(TokenType tokenType, String subject) {
+        if (subject == null || !subject.equals(tokenType.name())) {
+            throw new CommonException(ErrorType.INVALID_TOKEN);
+        }
     }
 }
