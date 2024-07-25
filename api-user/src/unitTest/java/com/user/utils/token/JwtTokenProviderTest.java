@@ -153,14 +153,32 @@ class JwtTokenProviderTest {
 
     @Test
     @DisplayName("토큰의 subject가 TokenType과 일치하지 않으면 INVALID_TOKEN 에러를 발생시킨다")
-    void tokenContainsCollectSubject() {
+    void tokenContainsIncorrectSubject() {
         // given
         TokenPayload tokenPayload = new TokenPayload("email@gmail.com", 1L, 1L);
         Date now = new Date();
         String token = jwtTokenProvider.generateToken(access, tokenPayload, now);
 
+        when(access.name()).thenReturn("INCORRECT_SUBJECT");
+
         // when & then
-        assertThatThrownBy(() -> jwtTokenProvider.getPayload(refresh, token))
+        assertThatThrownBy(() -> jwtTokenProvider.getPayload(access, token))
+                .isInstanceOf(CommonException.class)
+                .hasMessage(ErrorType.INVALID_TOKEN.getMessage());
+    }
+
+    @Test
+    @DisplayName("토큰의 subject가 null이면 INVALID_TOKEN 에러를 발생시킨다")
+    void tokenContainsNullSubject() {
+        // given
+        TokenPayload tokenPayload = new TokenPayload("email@gmail.com", 1L, 1L);
+        Date now = new Date();
+        String token = jwtTokenProvider.generateToken(access, tokenPayload, now);
+
+        when(access.name()).thenReturn(null);
+
+        // when & then
+        assertThatThrownBy(() -> jwtTokenProvider.getPayload(access, token))
                 .isInstanceOf(CommonException.class)
                 .hasMessage(ErrorType.INVALID_TOKEN.getMessage());
     }
