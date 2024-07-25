@@ -1,7 +1,7 @@
 package com.user.controller;
 
 import com.user.controller.request.UserRegisterRequest;
-import com.user.service.UserService;
+import com.user.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,11 +17,11 @@ import static org.springframework.http.HttpStatus.CREATED;
 @RequestMapping("/auth")
 public class AuthController {
 
-    private final UserService userService;
+    private final AuthService authService;
 
     @PostMapping("/signup")
     public ResponseEntity<Void> signup(@RequestBody @Valid UserRegisterRequest request) {
-        userService.register(request);
+        authService.register(request);
         return ResponseEntity.status(CREATED).build();
     }
 

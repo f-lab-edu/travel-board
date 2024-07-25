@@ -15,4 +15,8 @@ public class UserManager {
                 .bio(Optional.ofNullable(bio).orElse(""))
                 .build();
     }
+
+    public static void updateRefreshToken(User user, String refreshToken) {
+        user.setRefreshToken(refreshToken);
+    }
 }
