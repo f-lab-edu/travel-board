@@ -36,15 +36,11 @@ public class JwtTokenProvider {
 
     private Claims getClaims(TokenType tokenType, String token) {
         try {
-            Claims claims = Jwts.parser()
+            return Jwts.parser()
                     .verifyWith(tokenType.getTokenProperty().getSecretKey())
                     .build()
                     .parseSignedClaims(token)
                     .getPayload();
-            if (!claims.getSubject().equals(tokenType.name())) {
-                throw new CommonException(ErrorType.INVALID_TOKEN);
-            }
-            return claims;
         } catch (MalformedJwtException | SignatureException | UnsupportedJwtException | IllegalArgumentException e) {
             throw new CommonException(ErrorType.INVALID_TOKEN);
         } catch (ExpiredJwtException e) {
