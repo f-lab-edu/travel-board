@@ -9,14 +9,16 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.SignatureException;
-import org.springframework.stereotype.Component;
+import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
-@Component
+import static lombok.AccessLevel.PRIVATE;
+
+@NoArgsConstructor(access = PRIVATE)
 public class JwtTokenProvider {
 
-    public String generateToken(TokenType tokenType, TokenPayload tokenPayload, Date now) {
+    public static String generateToken(TokenType tokenType, TokenPayload tokenPayload, Date now) {
         Date expiration = new Date(now.getTime() + tokenType.getTokenProperty().getValidityInMillisSeconds());
         return Jwts.builder()
                 .subject(tokenType.name())
@@ -29,12 +31,12 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public TokenPayload getPayload(TokenType tokenType, String token) {
+    public static TokenPayload getPayload(TokenType tokenType, String token) {
         Claims claims = getClaims(tokenType, token);
         return TokenPayload.from(claims);
     }
 
-    private Claims getClaims(TokenType tokenType, String token) {
+    private static Claims getClaims(TokenType tokenType, String token) {
         try {
             Claims claims = Jwts.parser()
                     .verifyWith(tokenType.getTokenProperty().getSecretKey())
@@ -53,7 +55,7 @@ public class JwtTokenProvider {
         }
     }
 
-    private void checkSubject(TokenType tokenType, String subject) {
+    private static void checkSubject(TokenType tokenType, String subject) {
         if (subject == null || !subject.equals(tokenType.name())) {
             throw new CommonException(ErrorType.INVALID_TOKEN);
         }
