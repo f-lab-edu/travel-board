@@ -36,11 +36,16 @@ public class JwtTokenProvider {
 
     private Claims getClaims(TokenType tokenType, String token) {
         try {
-            return Jwts.parser()
+            Claims claims = Jwts.parser()
                     .verifyWith(tokenType.getTokenProperty().getSecretKey())
                     .build()
                     .parseSignedClaims(token)
                     .getPayload();
+            String subject = claims.getSubject();
+            if (isIncorrectSubject(tokenType, subject)) {
+                throw new CommonException(ErrorType.INVALID_TOKEN);
+            }
+            return claims;
         } catch (MalformedJwtException | SignatureException | UnsupportedJwtException | IllegalArgumentException e) {
             throw new CommonException(ErrorType.INVALID_TOKEN);
         } catch (ExpiredJwtException e) {
@@ -48,5 +53,9 @@ public class JwtTokenProvider {
         } catch (JwtException e) {
             throw new CommonException(ErrorType.UNAUTHORIZED_TOKEN);
         }
+    }
+
+    private boolean isIncorrectSubject(TokenType tokenType, String subject) {
+        return subject == null || !subject.equals(tokenType.name());
     }
 }
