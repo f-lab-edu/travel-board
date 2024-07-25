@@ -7,7 +7,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -22,9 +21,6 @@ import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 import static org.mockito.Mockito.when;
 
 class JwtTokenProviderTest {
-
-    @InjectMocks
-    private JwtTokenProvider jwtTokenProvider;
 
     @Mock
     private TokenType access;
@@ -53,8 +49,8 @@ class JwtTokenProviderTest {
         Date now = new Date();
 
         // when
-        String token = jwtTokenProvider.generateToken(access, tokenPayload, now);
-        TokenPayload result = jwtTokenProvider.getPayload(access, token);
+        String token = JwtTokenProvider.generateToken(access, tokenPayload, now);
+        TokenPayload result = JwtTokenProvider.getPayload(access, token);
 
         // then
         assertThat(result).isEqualTo(tokenPayload);
@@ -68,8 +64,8 @@ class JwtTokenProviderTest {
         Date now = new Date();
 
         // when
-        String token = jwtTokenProvider.generateToken(refresh, tokenPayload, now);
-        TokenPayload result = jwtTokenProvider.getPayload(refresh, token);
+        String token = JwtTokenProvider.generateToken(refresh, tokenPayload, now);
+        TokenPayload result = JwtTokenProvider.getPayload(refresh, token);
 
         // then
         assertThat(result).isEqualTo(tokenPayload);
@@ -85,10 +81,10 @@ class JwtTokenProviderTest {
         // given
         TokenPayload tokenPayload = new TokenPayload("email@gmail.com", 1L, 1L);
         Date now = new Date(1721396135444L);
-        String token = jwtTokenProvider.generateToken(access, tokenPayload, now);
+        String token = JwtTokenProvider.generateToken(access, tokenPayload, now);
 
         // when & then
-        assertThatThrownBy(() -> jwtTokenProvider.getPayload(access, token))
+        assertThatThrownBy(() -> JwtTokenProvider.getPayload(access, token))
                 .isInstanceOf(CommonException.class)
                 .hasMessage(ErrorType.TOKEN_EXPIRED.getMessage());
     }
@@ -107,7 +103,7 @@ class JwtTokenProviderTest {
         // when & then
         return tokens.stream()
                 .map(token -> dynamicTest("형식이 잘못된 토큰이면 INVALID_TOKEN 에러를 발생시킨다",
-                        () -> assertThatThrownBy(() -> jwtTokenProvider.getPayload(access, token))
+                        () -> assertThatThrownBy(() -> JwtTokenProvider.getPayload(access, token))
                                 .isInstanceOf(CommonException.class)
                                 .hasMessage(ErrorType.INVALID_TOKEN.getMessage())));
     }
@@ -124,7 +120,7 @@ class JwtTokenProviderTest {
         // when & then
         return tokens.stream()
                 .map(token -> dynamicTest("토큰이 empty 문자열이면 INVALID_TOKEN 에러를 발생시킨다",
-                        () -> assertThatThrownBy(() -> jwtTokenProvider.getPayload(access, token))
+                        () -> assertThatThrownBy(() -> JwtTokenProvider.getPayload(access, token))
                                 .isInstanceOf(CommonException.class)
                                 .hasMessage(ErrorType.INVALID_TOKEN.getMessage())));
     }
@@ -140,15 +136,15 @@ class JwtTokenProviderTest {
         String token = null;
 
         // when & then
-        assertThatThrownBy(() -> jwtTokenProvider.getPayload(access, token))
+        assertThatThrownBy(() -> JwtTokenProvider.getPayload(access, token))
                 .isInstanceOf(CommonException.class)
                 .hasMessage(ErrorType.INVALID_TOKEN.getMessage());
     }
 
     @Test
     @DisplayName("현재 알 수 없는 Token 에러는 UNAUTHORIZED_TOKEN 에러를 발생시킨다")
-    void jwtTokenProviderThrowsUnauthorizedTokenError() {
-        // jwtTokenProvider.getPayload(access, token) will throw CommonException(ErrorType.UNAUTHORIZED_TOKEN)
+    void JwtTokenProviderThrowsUnauthorizedTokenError() {
+        // JwtTokenProvider.getPayload(access, token) will throw CommonException(ErrorType.UNAUTHORIZED_TOKEN)
     }
 
     @Test
@@ -157,12 +153,12 @@ class JwtTokenProviderTest {
         // given
         TokenPayload tokenPayload = new TokenPayload("email@gmail.com", 1L, 1L);
         Date now = new Date();
-        String token = jwtTokenProvider.generateToken(access, tokenPayload, now);
+        String token = JwtTokenProvider.generateToken(access, tokenPayload, now);
 
         when(access.name()).thenReturn("INCORRECT_SUBJECT");
 
         // when & then
-        assertThatThrownBy(() -> jwtTokenProvider.getPayload(access, token))
+        assertThatThrownBy(() -> JwtTokenProvider.getPayload(access, token))
                 .isInstanceOf(CommonException.class)
                 .hasMessage(ErrorType.INVALID_TOKEN.getMessage());
     }
@@ -173,12 +169,12 @@ class JwtTokenProviderTest {
         // given
         TokenPayload tokenPayload = new TokenPayload("email@gmail.com", 1L, 1L);
         Date now = new Date();
-        String token = jwtTokenProvider.generateToken(access, tokenPayload, now);
+        String token = JwtTokenProvider.generateToken(access, tokenPayload, now);
 
         when(access.name()).thenReturn(null);
 
         // when & then
-        assertThatThrownBy(() -> jwtTokenProvider.getPayload(access, token))
+        assertThatThrownBy(() -> JwtTokenProvider.getPayload(access, token))
                 .isInstanceOf(CommonException.class)
                 .hasMessage(ErrorType.INVALID_TOKEN.getMessage());
     }
@@ -189,10 +185,10 @@ class JwtTokenProviderTest {
         // given
         TokenPayload tokenPayload = new TokenPayload("email@gmail.com", 1L, 1L);
         Date futureDate = new Date(System.currentTimeMillis() + 3600000);
-        String token = jwtTokenProvider.generateToken(access, tokenPayload, futureDate);
+        String token = JwtTokenProvider.generateToken(access, tokenPayload, futureDate);
 
         // when
-        TokenPayload result = jwtTokenProvider.getPayload(access, token);
+        TokenPayload result = JwtTokenProvider.getPayload(access, token);
 
         // then
         assertThat(result).isEqualTo(tokenPayload);
