@@ -43,9 +43,4 @@ public class AuthService {
                 .orElseThrow(() -> new CommonException(USER_NOT_FOUND));
         UserManager.updateRefreshToken(user, refreshToken);
     }
-
-    public User findByEmail(String email) {
-        return userRepository.findByEmail(email)
-                .orElseThrow(() -> new CommonException(USER_NOT_FOUND));
-    }
 }
