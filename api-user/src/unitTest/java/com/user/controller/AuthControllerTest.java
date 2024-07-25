@@ -3,7 +3,7 @@ package com.user.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.user.config.SecurityConfig;
 import com.user.controller.request.UserRegisterRequest;
-import com.user.service.UserService;
+import com.user.service.AuthService;
 import com.user.support.fixture.dto.request.UserRegisterRequestFixtureFactory;
 import com.user.utils.error.CommonException;
 import org.junit.jupiter.api.DisplayName;
@@ -39,7 +39,7 @@ class AuthControllerTest {
     private ObjectMapper objectMapper;
 
     @MockBean
-    private UserService userService;
+    private AuthService authService;
 
     @Test
     @DisplayName("회원가입이 성공하면 201 Created 응답이 반환되어야 한다")
@@ -62,7 +62,7 @@ class AuthControllerTest {
         // given
         UserRegisterRequest request = UserRegisterRequestFixtureFactory.create();
         String json = objectMapper.writeValueAsString(request);
-        doThrow(new RuntimeException()).when(userService).register(request);
+        doThrow(new RuntimeException()).when(authService).register(request);
 
         // when & then
         mockMvc.perform(post("/auth/signup")
@@ -79,7 +79,7 @@ class AuthControllerTest {
         // given
         UserRegisterRequest request = UserRegisterRequestFixtureFactory.create();
         String json = objectMapper.writeValueAsString(request);
-        doThrow(new CommonException(DUPLICATED_EMAIL)).when(userService).register(request);
+        doThrow(new CommonException(DUPLICATED_EMAIL)).when(authService).register(request);
 
         // when & then
         mockMvc.perform(post("/auth/signup")

@@ -26,10 +26,10 @@ import static org.mockito.BDDMockito.mock;
 import static org.mockito.BDDMockito.then;
 
 @ExtendWith(MockitoExtension.class)
-class UserServiceTest {
+class AuthServiceTest {
 
     @InjectMocks
-    private UserService userService;
+    private AuthService authService;
     @Mock
     private AccountRepository accountRepository;
     @Mock
@@ -46,7 +46,7 @@ class UserServiceTest {
         given(passwordEncoder.encode(request.password())).willReturn("encodedPassword");
 
         // when
-        assertDoesNotThrow(() -> userService.register(request));
+        assertDoesNotThrow(() -> authService.register(request));
 
         // then
         then(accountRepository).should().save(any(Account.class));
@@ -61,7 +61,7 @@ class UserServiceTest {
         given(accountRepository.findByEmail(request.email())).willReturn(Optional.of(mock(Account.class)));
 
         // when & then
-        assertThatThrownBy(() -> userService.register(request))
+        assertThatThrownBy(() -> authService.register(request))
                 .isInstanceOf(CommonException.class)
                 .hasMessage(DUPLICATED_EMAIL.getMessage());
     }
