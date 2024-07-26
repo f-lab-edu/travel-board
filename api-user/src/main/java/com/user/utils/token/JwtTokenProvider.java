@@ -6,9 +6,6 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.UnsupportedJwtException;
-import io.jsonwebtoken.security.SignatureException;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
@@ -46,18 +43,16 @@ public class JwtTokenProvider {
             String subject = claims.getSubject();
             checkSubject(tokenType, subject);
             return claims;
-        } catch (MalformedJwtException | SignatureException | UnsupportedJwtException | IllegalArgumentException e) {
-            throw new CommonException(ErrorType.INVALID_TOKEN);
         } catch (ExpiredJwtException e) {
             throw new CommonException(ErrorType.TOKEN_EXPIRED);
-        } catch (JwtException e) {
+        } catch (JwtException | IllegalArgumentException e) {
             throw new CommonException(ErrorType.UNAUTHORIZED_TOKEN);
         }
     }
 
     private static void checkSubject(TokenType tokenType, String subject) {
         if (subject == null || !subject.equals(tokenType.name())) {
-            throw new CommonException(ErrorType.INVALID_TOKEN);
+            throw new CommonException(ErrorType.UNAUTHORIZED_TOKEN);
         }
     }
 }
