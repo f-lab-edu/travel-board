@@ -93,24 +93,24 @@ class JwtTokenProviderTest {
      * invalid token(header, payload) format will throw MalformedJwtException
      * invalid token(signature) will throw SignatureException
      * unsupported jwt will throw UnsupportedJwtException
-     * it should be caught and rethrown as CommonException(ErrorType.INVALID_TOKEN)
+     * it should be caught and rethrown as CommonException(ErrorType.UNAUTHORIZED_TOKEN)
      */
     @TestFactory
     Stream<DynamicTest> invalidTokenFormatThrowsInvalidTokenError() {
         // given
-        List<String> tokens = List.of("invalid_token", "invalid.token.string", "eyJhbGciOiJIUzI1NiJ9.invalid.payload", "eyJhbGciOiJIUzI1NiJ9..payload");
+        List<String> tokens = List.of("UNAUTHORIZED_TOKEN", "invalid.token.string", "eyJhbGciOiJIUzI1NiJ9.invalid.payload", "eyJhbGciOiJIUzI1NiJ9..payload");
 
         // when & then
         return tokens.stream()
-                .map(token -> dynamicTest("형식이 잘못된 토큰이면 INVALID_TOKEN 에러를 발생시킨다",
+                .map(token -> dynamicTest("형식이 잘못된 토큰이면 UNAUTHORIZED_TOKEN 에러를 발생시킨다",
                         () -> assertThatThrownBy(() -> JwtTokenProvider.getPayload(access, token))
                                 .isInstanceOf(CommonException.class)
-                                .hasMessage(ErrorType.INVALID_TOKEN.getMessage())));
+                                .hasMessage(ErrorType.UNAUTHORIZED_TOKEN.getMessage())));
     }
 
     /**
      * empty string token will throw IllegalArgumentException
-     * it should be caught and rethrown as CommonException(ErrorType.INVALID_TOKEN)
+     * it should be caught and rethrown as CommonException(ErrorType.UNAUTHORIZED_TOKEN)
      */
     @TestFactory
     Stream<DynamicTest> emptyStringTokenThrowsInvalidTokenError() {
@@ -119,18 +119,18 @@ class JwtTokenProviderTest {
 
         // when & then
         return tokens.stream()
-                .map(token -> dynamicTest("토큰이 empty 문자열이면 INVALID_TOKEN 에러를 발생시킨다",
+                .map(token -> dynamicTest("토큰이 empty 문자열이면 UNAUTHORIZED_TOKEN 에러를 발생시킨다",
                         () -> assertThatThrownBy(() -> JwtTokenProvider.getPayload(access, token))
                                 .isInstanceOf(CommonException.class)
-                                .hasMessage(ErrorType.INVALID_TOKEN.getMessage())));
+                                .hasMessage(ErrorType.UNAUTHORIZED_TOKEN.getMessage())));
     }
 
     /**
      * null token will throw IllegalArgumentException
-     * it should be caught and rethrown as CommonException(ErrorType.INVALID_TOKEN)
+     * it should be caught and rethrown as CommonException(ErrorType.UNAUTHORIZED_TOKEN)
      */
     @Test
-    @DisplayName("null 토큰은 INVALID_TOKEN 에러를 발생시킨다")
+    @DisplayName("null 토큰은 UNAUTHORIZED_TOKEN 에러를 발생시킨다")
     void nullStringTokenThrowsInvalidTokenError() {
         // given
         String token = null;
@@ -138,7 +138,7 @@ class JwtTokenProviderTest {
         // when & then
         assertThatThrownBy(() -> JwtTokenProvider.getPayload(access, token))
                 .isInstanceOf(CommonException.class)
-                .hasMessage(ErrorType.INVALID_TOKEN.getMessage());
+                .hasMessage(ErrorType.UNAUTHORIZED_TOKEN.getMessage());
     }
 
     @Test
@@ -148,7 +148,7 @@ class JwtTokenProviderTest {
     }
 
     @Test
-    @DisplayName("토큰의 subject가 TokenType과 일치하지 않으면 INVALID_TOKEN 에러를 발생시킨다")
+    @DisplayName("토큰의 subject가 TokenType과 일치하지 않으면 UNAUTHORIZED_TOKEN 에러를 발생시킨다")
     void tokenContainsIncorrectSubject() {
         // given
         TokenPayload tokenPayload = new TokenPayload("email@gmail.com", 1L, 1L);
@@ -160,11 +160,11 @@ class JwtTokenProviderTest {
         // when & then
         assertThatThrownBy(() -> JwtTokenProvider.getPayload(access, token))
                 .isInstanceOf(CommonException.class)
-                .hasMessage(ErrorType.INVALID_TOKEN.getMessage());
+                .hasMessage(ErrorType.UNAUTHORIZED_TOKEN.getMessage());
     }
 
     @Test
-    @DisplayName("토큰의 subject가 null이면 INVALID_TOKEN 에러를 발생시킨다")
+    @DisplayName("토큰의 subject가 null이면 UNAUTHORIZED_TOKEN 에러를 발생시킨다")
     void tokenContainsNullSubject() {
         // given
         TokenPayload tokenPayload = new TokenPayload("email@gmail.com", 1L, 1L);
@@ -176,7 +176,7 @@ class JwtTokenProviderTest {
         // when & then
         assertThatThrownBy(() -> JwtTokenProvider.getPayload(access, token))
                 .isInstanceOf(CommonException.class)
-                .hasMessage(ErrorType.INVALID_TOKEN.getMessage());
+                .hasMessage(ErrorType.UNAUTHORIZED_TOKEN.getMessage());
     }
 
     @Test
