@@ -5,7 +5,7 @@ import com.storage.entity.User;
 
 import java.util.Optional;
 
-public class UserManager {
+public class UserCreator {
 
     public static User create(Account account, String nickname, String profileImageUrl, String bio) {
         return User.builder()
@@ -14,9 +14,5 @@ public class UserManager {
                 .profileImageUrl(Optional.ofNullable(profileImageUrl).orElse(""))
                 .bio(Optional.ofNullable(bio).orElse(""))
                 .build();
-    }
-
-    public static void updateRefreshToken(User user, String refreshToken) {
-        user.setRefreshToken(refreshToken);
     }
 }

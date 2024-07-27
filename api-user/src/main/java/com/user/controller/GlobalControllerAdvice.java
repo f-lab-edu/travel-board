@@ -1,7 +1,7 @@
 package com.user.controller;
 
 import com.user.utils.error.CommonException;
-import com.user.utils.error.ErrorMessage;
+import com.user.dto.response.ErrorMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.user.utils.error.ErrorType.DEFAULT_ERROR;
-import static com.user.utils.error.ErrorType.INVALID_REQUEST;
+import static com.user.enums.ErrorType.DEFAULT_ERROR;
+import static com.user.enums.ErrorType.INVALID_REQUEST;
 
 @Slf4j
 @RestControllerAdvice

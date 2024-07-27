@@ -1,6 +1,6 @@
 package com.user.controller;
 
-import com.user.controller.request.UserRegisterRequest;
+import com.user.dto.request.UserRegisterRequest;
 import com.user.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
