@@ -136,12 +136,6 @@ class JwtTokenProviderTest {
     }
 
     @Test
-    @DisplayName("현재 알 수 없는 Token 에러는 UNAUTHORIZED_TOKEN 에러를 발생시킨다")
-    void JwtTokenProviderThrowsUnauthorizedTokenError() {
-        // JwtTokenProvider.getPayload(access, token) will throw CommonException(ErrorType.UNAUTHORIZED_TOKEN)
-    }
-
-    @Test
     @DisplayName("토큰의 subject가 TokenType과 일치하지 않으면 UNAUTHORIZED_TOKEN 에러를 발생시킨다")
     void tokenContainsIncorrectSubject() {
         // given
