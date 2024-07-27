@@ -1,8 +1,8 @@
 package com.user.utils.token;
 
+import com.user.enums.ErrorType;
 import com.user.enums.TokenType;
 import com.user.utils.error.CommonException;
-import com.user.enums.ErrorType;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -10,7 +10,6 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import javax.crypto.SecretKey;
 import java.time.Duration;
 import java.util.Base64;
 import java.util.Date;
@@ -18,30 +17,23 @@ import java.util.Date;
 @Component
 public class JwtTokenProvider {
 
-    private final SecretKey accessSecretKey;
-    private final Long accessValidityMilliseconds;
-    private final SecretKey refreshSecretKey;
-    private final Long refreshValidityMilliseconds;
-
     public JwtTokenProvider(@Value("${jwt.access-token.secret}") String accessSecret,
                             @Value("${jwt.access-token.valid-time}") Duration accessValidTime,
                             @Value("${jwt.refresh-token.secret}") String refreshSecret,
                             @Value("${jwt.refresh-token.valid-time}") Duration refreshValidTime) {
         byte[] secretBytes = Base64.getDecoder().decode(accessSecret);
-        this.accessSecretKey = Keys.hmacShaKeyFor(secretBytes);
-        this.accessValidityMilliseconds = accessValidTime.toMillis();
+        TokenType.ACCESS.setSecretKey(Keys.hmacShaKeyFor(secretBytes));
+        TokenType.ACCESS.setValidityMilliseconds(accessValidTime.toMillis());
         secretBytes = Base64.getDecoder().decode(refreshSecret);
-        this.refreshSecretKey = Keys.hmacShaKeyFor(secretBytes);
-        this.refreshValidityMilliseconds = refreshValidTime.toMillis();
+        TokenType.REFRESH.setSecretKey(Keys.hmacShaKeyFor(secretBytes));
+        TokenType.REFRESH.setValidityMilliseconds(refreshValidTime.toMillis());
     }
 
     public String generateToken(TokenType tokenType, Long userId, Date now) {
-        SecretKey secretKey = getSecretKey(tokenType);
-        Long validityMilliseconds = tokenType == TokenType.ACCESS ? accessValidityMilliseconds : refreshValidityMilliseconds;
-        Date expiration = new Date(now.getTime() + validityMilliseconds);
+        Date expiration = new Date(now.getTime() + tokenType.getValidityMilliseconds());
         return Jwts.builder()
                 .subject(tokenType.name())
-                .signWith(secretKey)
+                .signWith(tokenType.getSecretKey())
                 .claim("userId", userId)
                 .issuedAt(now)
                 .expiration(expiration)
@@ -54,10 +46,9 @@ public class JwtTokenProvider {
     }
 
     private Claims getClaims(TokenType tokenType, String token) {
-        SecretKey secretKey = getSecretKey(tokenType);
         try {
             Claims claims = Jwts.parser()
-                    .verifyWith(secretKey)
+                    .verifyWith(tokenType.getSecretKey())
                     .build()
                     .parseSignedClaims(token)
                     .getPayload();
@@ -67,10 +58,6 @@ public class JwtTokenProvider {
         } catch (JwtException | IllegalArgumentException e) {
             throw new CommonException(ErrorType.UNAUTHORIZED_TOKEN);
         }
-    }
-
-    private SecretKey getSecretKey(TokenType tokenType) {
-        return tokenType == TokenType.ACCESS ? accessSecretKey : refreshSecretKey;
     }
 
     private void validateSubject(TokenType tokenType, String subject) {
