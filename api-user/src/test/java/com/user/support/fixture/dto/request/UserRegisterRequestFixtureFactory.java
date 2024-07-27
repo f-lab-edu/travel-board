@@ -1,6 +1,6 @@
 package com.user.support.fixture.dto.request;
 
-import com.user.controller.request.UserRegisterRequest;
+import com.user.dto.request.UserRegisterRequest;
 
 import java.util.List;
 
