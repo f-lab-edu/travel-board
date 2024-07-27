@@ -4,7 +4,7 @@ import com.storage.entity.Account;
 import com.storage.entity.User;
 import com.storage.repository.AccountRepository;
 import com.storage.repository.UserRepository;
-import com.user.controller.request.UserRegisterRequest;
+import com.user.dto.request.UserRegisterRequest;
 import com.user.support.fixture.dto.request.UserRegisterRequestFixtureFactory;
 import com.user.utils.error.CommonException;
 import org.junit.jupiter.api.DisplayName;
@@ -17,7 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
 
-import static com.user.utils.error.ErrorType.DUPLICATED_EMAIL;
+import static com.user.enums.ErrorType.DUPLICATED_EMAIL;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.any;

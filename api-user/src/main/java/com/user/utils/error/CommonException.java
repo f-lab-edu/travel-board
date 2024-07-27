@@ -1,5 +1,6 @@
 package com.user.utils.error;
 
+import com.user.enums.ErrorType;
 import lombok.Getter;
 
 @Getter

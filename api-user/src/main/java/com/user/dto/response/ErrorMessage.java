@@ -1,5 +1,6 @@
-package com.user.utils.error;
+package com.user.dto.response;
 
+import com.user.enums.ErrorType;
 import lombok.Getter;
 
 import java.util.Map;
