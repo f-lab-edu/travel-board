@@ -2,7 +2,7 @@ package com.user.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.user.config.SecurityConfig;
-import com.user.controller.request.UserRegisterRequest;
+import com.user.dto.request.UserRegisterRequest;
 import com.user.service.AuthService;
 import com.user.support.fixture.dto.request.UserRegisterRequestFixtureFactory;
 import com.user.utils.error.CommonException;
@@ -18,9 +18,9 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.stream.Stream;
 
-import static com.user.utils.error.ErrorType.DEFAULT_ERROR;
-import static com.user.utils.error.ErrorType.DUPLICATED_EMAIL;
-import static com.user.utils.error.ErrorType.INVALID_REQUEST;
+import static com.user.enums.ErrorType.DEFAULT_ERROR;
+import static com.user.enums.ErrorType.DUPLICATED_EMAIL;
+import static com.user.enums.ErrorType.INVALID_REQUEST;
 import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 import static org.mockito.Mockito.doThrow;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
