@@ -9,3 +9,17 @@ content-type: application/json
   "profileImageUrl": "",
   "bio": "안녕하세요.\n백엔드 개발자 김우종입니다."
 }
+
+### 로그인
+POST http://localhost:8080/auth/login
+content-type: application/json
+
+{
+  "email": "skekdnwhd@gmail.com",
+  "password": "qwer1234"
+}
+
+> {%
+    client.global.set("accessToken", response.body.accessToken);
+    client.global.set("refreshToken", response.body.refreshToken);
+%}
