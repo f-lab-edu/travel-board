@@ -7,7 +7,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 public class UserUpdater {
 
-    @Transactional
     public void updateRefreshToken(User user, String refreshToken) {
         user.setRefreshToken(refreshToken);
     }

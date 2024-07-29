@@ -45,6 +45,7 @@ public class AuthService {
                 .orElseThrow(() -> new UsernameNotFoundException(LOGIN_FAIL.getMessage()));
     }
 
+    @Transactional
     public void registerRefreshToken(User user, String refreshToken) {
         userUpdater.updateRefreshToken(user, refreshToken);
     }
