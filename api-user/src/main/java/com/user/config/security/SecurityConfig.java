@@ -44,7 +44,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(registry ->
                         registry.anyRequest().permitAll()
                 )
-                .addFilterBefore(emailPasswordAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterAt(emailPasswordAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
