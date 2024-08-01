@@ -9,10 +9,12 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.time.Duration;
 import java.util.Base64;
 import java.util.Date;
+import java.util.Optional;
 
 @Component
 public class JwtTokenProvider {
@@ -43,6 +45,13 @@ public class JwtTokenProvider {
     public Long getUserId(TokenType tokenType, String token) {
         Claims claims = getClaims(tokenType, token);
         return claims.get("userId", Long.class);
+    }
+
+    public Optional<String> extractTokenFromHeader(String authorization) {
+        if (StringUtils.hasText(authorization) && authorization.startsWith("Bearer ")) {
+            return Optional.of(authorization.substring(7));
+        }
+        return Optional.empty();
     }
 
     private Claims getClaims(TokenType tokenType, String token) {

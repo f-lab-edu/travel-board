@@ -2,11 +2,13 @@ package com.user.config.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.user.config.security.filter.EmailPasswordAuthFilter;
+import com.user.config.security.filter.JwtAuthenticationFilter;
 import com.user.config.security.handler.LoginFailHandler;
 import com.user.config.security.handler.LoginSuccessHandler;
 import com.user.service.AuthService;
 import com.user.utils.token.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -14,6 +16,7 @@ import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -22,7 +25,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.servlet.HandlerExceptionResolver;
 
+@EnableWebSecurity(debug = true)
 @Configuration(proxyBeanMethods = false)
 @EnableMethodSecurity
 @RequiredArgsConstructor
@@ -39,11 +44,13 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http,
-                                                   EmailPasswordAuthFilter emailPasswordAuthFilter) throws Exception {
+                                                   EmailPasswordAuthFilter emailPasswordAuthFilter,
+                                                   JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception {
         return http
                 .authorizeHttpRequests(registry ->
                         registry.anyRequest().permitAll()
                 )
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterAt(emailPasswordAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -75,6 +82,13 @@ public class SecurityConfig {
     @Bean
     public UserDetailsService userDetailsService(AuthService authService) {
         return new CustomUserDetailsService(authService);
+    }
+
+    @Bean
+    public JwtAuthenticationFilter jwtAuthenticationFilter(JwtTokenProvider jwtTokenProvider,
+                                                           @Qualifier("handlerExceptionResolver") HandlerExceptionResolver resolver,
+                                                           AuthService authService) {
+        return new JwtAuthenticationFilter(jwtTokenProvider, resolver, authService);
     }
 
     @Bean

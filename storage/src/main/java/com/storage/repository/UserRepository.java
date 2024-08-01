@@ -15,4 +15,12 @@ public interface UserRepository extends JpaRepository<User, Long> {
             WHERE a.email = :email
             """)
     Optional<User> findByAccountEmail(String email);
+
+    @Query("""
+            SELECT u
+            FROM User u
+                JOIN FETCH u.account a
+            WHERE u.id = :id
+            """)
+    Optional<User> findByIdWithAccount(Long id);
 }
