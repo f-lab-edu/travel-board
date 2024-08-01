@@ -4,6 +4,7 @@ import com.storage.entity.Account;
 import com.storage.entity.User;
 import com.storage.repository.AccountRepository;
 import com.storage.repository.UserRepository;
+import com.user.config.security.UserPrincipal;
 import com.user.domain.account.AccountCreator;
 import com.user.domain.user.UserCreator;
 import com.user.domain.user.UserUpdater;
@@ -17,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import static com.user.enums.ErrorType.DUPLICATED_EMAIL;
 import static com.user.enums.ErrorType.LOGIN_FAIL;
+import static com.user.enums.ErrorType.USER_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -48,5 +50,11 @@ public class AuthService {
     @Transactional
     public void registerRefreshToken(User user, String refreshToken) {
         userUpdater.updateRefreshToken(user, refreshToken);
+    }
+
+    public UserPrincipal getUserPrincipal(Long userId) {
+        User user = userRepository.findByIdWithAccount(userId)
+                .orElseThrow(() -> new CommonException(USER_NOT_FOUND));
+        return UserPrincipal.of(user);
     }
 }
