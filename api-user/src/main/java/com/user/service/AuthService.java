@@ -9,12 +9,16 @@ import com.user.domain.account.AccountCreator;
 import com.user.domain.user.UserCreator;
 import com.user.domain.user.UserUpdater;
 import com.user.dto.request.UserRegisterRequest;
+import com.user.enums.TokenType;
 import com.user.utils.error.CommonException;
+import com.user.utils.token.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Date;
 
 import static com.user.enums.ErrorType.DUPLICATED_EMAIL;
 import static com.user.enums.ErrorType.LOGIN_FAIL;
@@ -28,6 +32,7 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserUpdater userUpdater;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @Transactional
     public void register(UserRegisterRequest request) {
@@ -56,5 +61,12 @@ public class AuthService {
         User user = userRepository.findByIdWithAccount(userId)
                 .orElseThrow(() -> new CommonException(USER_NOT_FOUND));
         return UserPrincipal.of(user);
+    }
+
+    public String reissueAccessToken(String refreshToken) {
+        Long userId = jwtTokenProvider.getUserId(TokenType.REFRESH, refreshToken);
+        User user = userRepository.findByIdAndRefreshToken(userId, refreshToken)
+                .orElseThrow(() -> new CommonException(USER_NOT_FOUND));
+        return jwtTokenProvider.generateToken(TokenType.ACCESS, user.getId(), new Date());
     }
 }

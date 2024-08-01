@@ -23,4 +23,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
             WHERE u.id = :id
             """)
     Optional<User> findByIdWithAccount(Long id);
+
+    Optional<User> findByIdAndRefreshToken(Long userId, String refreshToken);
 }

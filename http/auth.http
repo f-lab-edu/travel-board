@@ -23,3 +23,19 @@ content-type: application/json
     client.global.set("accessToken", response.body.accessToken);
     client.global.set("refreshToken", response.body.refreshToken);
 %}
+
+### 엑세스 토큰 갱신
+PATCH http://localhost:8080/auth/access-token
+content-type: application/json
+
+{
+  "refreshToken": "{{ refreshToken }}"
+}
+
+> {%
+    client.global.set("accessToken", response.body.accessToken);
+%}
+
+### ping
+GET http://localhost:8080/auth/ping
+Authorization: Bearer {{ accessToken }}
