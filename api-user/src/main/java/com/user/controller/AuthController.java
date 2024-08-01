@@ -1,5 +1,7 @@
 package com.user.controller;
 
+import com.storage.entity.User;
+import com.user.config.security.UserPrincipal;
 import com.user.dto.request.AccessTokenReissueRequest;
 import com.user.dto.request.LoginRequest;
 import com.user.dto.request.UserRegisterRequest;
@@ -9,6 +11,8 @@ import com.user.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -33,8 +37,9 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<TokenResponse> login(@RequestBody @Valid LoginRequest request) {
         authService.login(request);
-        TokenResponse tokenResponse = authService.createTokens();
-        authService.registerRefreshToken(tokenResponse.refreshToken());
+        User user = getPrincipalUser();
+        TokenResponse tokenResponse = authService.createTokens(user);
+        authService.registerRefreshToken(user, tokenResponse.refreshToken());
         return ResponseEntity.ok(tokenResponse);
     }
 
@@ -42,5 +47,11 @@ public class AuthController {
     public ResponseEntity<AccessTokenResponse> reissueAccessToken(@RequestBody @Valid AccessTokenReissueRequest request) {
         String accessToken = authService.reissueAccessToken(request.refreshToken());
         return ResponseEntity.ok(AccessTokenResponse.of(accessToken));
+    }
+
+    private User getPrincipalUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserPrincipal principal = (UserPrincipal) authentication.getPrincipal();
+        return principal.getUser();
     }
 }

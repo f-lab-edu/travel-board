@@ -67,8 +67,7 @@ public class AuthService {
         }
     }
 
-    public TokenResponse createTokens() {
-        User user = getPrincipal().getUser();
+    public TokenResponse createTokens(User user) {
         Date now = new Date();
         String accessToken = jwtTokenProvider.generateToken(ACCESS, user.getId(), now);
         String refreshToken = jwtTokenProvider.generateToken(REFRESH, user.getId(), now);
@@ -76,8 +75,7 @@ public class AuthService {
     }
 
     @Transactional
-    public void registerRefreshToken(String refreshToken) {
-        User user = getPrincipal().getUser();
+    public void registerRefreshToken(User user, String refreshToken) {
         userUpdater.updateRefreshToken(user, refreshToken);
     }
 
@@ -92,10 +90,5 @@ public class AuthService {
         User user = userRepository.findByIdAndRefreshToken(userId, refreshToken)
                 .orElseThrow(() -> new CommonException(USER_NOT_FOUND));
         return jwtTokenProvider.generateToken(ACCESS, user.getId(), new Date());
-    }
-
-    private UserPrincipal getPrincipal() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return (UserPrincipal) authentication.getPrincipal();
     }
 }
