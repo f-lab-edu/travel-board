@@ -1,8 +1,8 @@
 package com.user.dto.response;
 
-public record TokenResponse(String accessToken) {
+public record TokenResponse(String accessToken, String refreshToken) {
 
-    public static TokenResponse of(String accessToken) {
-        return new TokenResponse(accessToken);
+    public static TokenResponse of(String accessToken, String refreshToken) {
+        return new TokenResponse(accessToken, refreshToken);
     }
 }

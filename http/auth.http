@@ -35,7 +35,3 @@ content-type: application/json
 > {%
     client.global.set("accessToken", response.body.accessToken);
 %}
-
-### ping
-GET http://localhost:8080/auth/ping
-Authorization: Bearer {{ accessToken }}

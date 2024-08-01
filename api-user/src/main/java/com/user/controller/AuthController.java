@@ -1,15 +1,14 @@
 package com.user.controller;
 
-import com.storage.entity.User;
-import com.user.config.security.CurrentUser;
 import com.user.dto.request.AccessTokenReissueRequest;
+import com.user.dto.request.LoginRequest;
 import com.user.dto.request.UserRegisterRequest;
+import com.user.dto.response.AccessTokenResponse;
 import com.user.dto.response.TokenResponse;
 import com.user.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,14 +30,17 @@ public class AuthController {
         return ResponseEntity.status(CREATED).build();
     }
 
-    @PatchMapping("/access-token")
-    public ResponseEntity<TokenResponse> reissueAccessToken(@RequestBody @Valid AccessTokenReissueRequest request) {
-        String accessToken = authService.reissueAccessToken(request.refreshToken());
-        return ResponseEntity.ok(TokenResponse.of(accessToken));
+    @PostMapping("/login")
+    public ResponseEntity<TokenResponse> login(@RequestBody @Valid LoginRequest request) {
+        authService.login(request);
+        TokenResponse tokenResponse = authService.createTokens();
+        authService.registerRefreshToken(tokenResponse.refreshToken());
+        return ResponseEntity.ok(tokenResponse);
     }
 
-    @GetMapping("/ping")
-    public ResponseEntity<Long> ping(@CurrentUser User user) {
-        return ResponseEntity.ok(user.getId());
+    @PatchMapping("/access-token")
+    public ResponseEntity<AccessTokenResponse> reissueAccessToken(@RequestBody @Valid AccessTokenReissueRequest request) {
+        String accessToken = authService.reissueAccessToken(request.refreshToken());
+        return ResponseEntity.ok(AccessTokenResponse.of(accessToken));
     }
 }
