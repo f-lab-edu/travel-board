@@ -52,10 +52,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 Long userId = jwtTokenProvider.getUserId(TokenType.ACCESS, token.get());
                 UserPrincipal principal = authService.getUserPrincipal(userId);
                 UsernamePasswordAuthenticationToken authenticated = UsernamePasswordAuthenticationToken.authenticated(
-                        principal,
-                        token.get(),
-                        principal.getAuthorities()
-                );
+                        principal, token.get(), principal.getAuthorities());
 
                 SecurityContextHolder.getContext().setAuthentication(authenticated);
             } catch (CommonException e) {
