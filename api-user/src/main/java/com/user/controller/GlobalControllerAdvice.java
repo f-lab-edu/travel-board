@@ -4,6 +4,7 @@ import com.user.utils.error.CommonException;
 import com.user.dto.response.ErrorMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.user.enums.ErrorType.ACCESS_DENIED;
 import static com.user.enums.ErrorType.DEFAULT_ERROR;
 import static com.user.enums.ErrorType.INVALID_REQUEST;
 
@@ -42,4 +44,9 @@ public class GlobalControllerAdvice {
         return ResponseEntity.internalServerError().body(message);
     }
 
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ErrorMessage> handleAccessDeniedException(AccessDeniedException e) {
+        ErrorMessage message = new ErrorMessage(ACCESS_DENIED);
+        return ResponseEntity.status(ACCESS_DENIED.getStatus()).body(message);
+    }
 }
