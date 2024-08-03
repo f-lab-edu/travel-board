@@ -19,6 +19,8 @@ import java.util.Optional;
 @Component
 public class JwtTokenProvider {
 
+    private static final String BEARER = "Bearer ";
+
     public JwtTokenProvider(@Value("${jwt.access-token.secret}") String accessSecret,
                             @Value("${jwt.access-token.valid-time}") Duration accessValidTime,
                             @Value("${jwt.refresh-token.secret}") String refreshSecret,
@@ -48,8 +50,8 @@ public class JwtTokenProvider {
     }
 
     public Optional<String> extractTokenFromHeader(String authorization) {
-        if (StringUtils.hasText(authorization) && authorization.startsWith("Bearer ")) {
-            return Optional.of(authorization.substring(7));
+        if (StringUtils.hasText(authorization) && authorization.startsWith(BEARER)) {
+            return Optional.of(authorization.substring(BEARER.length()));
         }
         return Optional.empty();
     }
