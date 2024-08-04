@@ -14,11 +14,6 @@ import com.user.dto.response.TokenResponse;
 import com.user.utils.error.CommonException;
 import com.user.utils.token.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,7 +35,6 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final UserUpdater userUpdater;
     private final JwtTokenProvider jwtTokenProvider;
-    private final AuthenticationManager authenticationManager;
 
     @Transactional
     public void register(UserRegisterRequest request) {
@@ -55,28 +49,18 @@ public class AuthService {
         userRepository.save(user);
     }
 
-    public void login(LoginRequest loginRequest) {
-        try {
-            UsernamePasswordAuthenticationToken token = UsernamePasswordAuthenticationToken.unauthenticated(
-                    loginRequest.email(), loginRequest.password());
+    @Transactional
+    public TokenResponse login(LoginRequest loginRequest) {
+        User user = userRepository.findByAccountEmail(loginRequest.email())
+                .orElseThrow(() -> new CommonException(LOGIN_FAIL));
 
-            Authentication authentication = authenticationManager.authenticate(token);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-        } catch (BadCredentialsException e) {
+        if (!passwordEncoder.matches(loginRequest.password(), user.getAccount().getPassword())) {
             throw new CommonException(LOGIN_FAIL);
         }
-    }
 
-    public TokenResponse createTokens(User user) {
-        Date now = new Date();
-        String accessToken = jwtTokenProvider.generateToken(ACCESS, user.getId(), now);
-        String refreshToken = jwtTokenProvider.generateToken(REFRESH, user.getId(), now);
-        return TokenResponse.of(accessToken, refreshToken);
-    }
-
-    @Transactional
-    public void registerRefreshToken(User user, String refreshToken) {
-        userUpdater.updateRefreshToken(user, refreshToken);
+        TokenResponse tokens = createTokens(user.getId(), new Date());
+        userUpdater.updateRefreshToken(user, tokens.refreshToken());
+        return tokens;
     }
 
     public UserPrincipal getUserPrincipal(Long userId) {
@@ -90,5 +74,11 @@ public class AuthService {
         User user = userRepository.findByIdAndRefreshToken(userId, refreshToken)
                 .orElseThrow(() -> new CommonException(USER_NOT_FOUND));
         return jwtTokenProvider.generateToken(ACCESS, user.getId(), new Date());
+    }
+
+    private TokenResponse createTokens(Long userId, Date now) {
+        String accessToken = jwtTokenProvider.generateToken(ACCESS, userId, now);
+        String refreshToken = jwtTokenProvider.generateToken(REFRESH, userId, now);
+        return TokenResponse.of(accessToken, refreshToken);
     }
 }
