@@ -1,7 +1,6 @@
 package com.user.config.security.filter;
 
 import com.user.config.security.UserPrincipal;
-import com.user.enums.TokenType;
 import com.user.service.AuthService;
 import com.user.utils.error.CommonException;
 import com.user.utils.token.JwtTokenProvider;
@@ -9,38 +8,24 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Qualifier;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import java.io.IOException;
 import java.util.Optional;
-import java.util.Set;
 
-@Component
+import static com.user.enums.TokenType.ACCESS;
+
+@RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
-    private final HandlerExceptionResolver resolver;
     private final AuthService authService;
-    private static final Set<String> EXCLUDED_PATHS = Set.of("/auth/login", "/auth/signup");
-
-    public JwtAuthenticationFilter(JwtTokenProvider jwtTokenProvider,
-                                   @Qualifier("handlerExceptionResolver") HandlerExceptionResolver resolver,
-                                   AuthService authService) {
-        this.jwtTokenProvider = jwtTokenProvider;
-        this.resolver = resolver;
-        this.authService = authService;
-    }
-
-    @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) {
-        return EXCLUDED_PATHS.contains(request.getRequestURI());
-    }
+    private final HandlerExceptionResolver resolver;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -49,7 +34,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         if (token.isPresent()) {
             try {
-                Long userId = jwtTokenProvider.getUserId(TokenType.ACCESS, token.get());
+                Long userId = jwtTokenProvider.getUserId(ACCESS, token.get());
                 UserPrincipal principal = authService.getUserPrincipal(userId);
                 UsernamePasswordAuthenticationToken authenticated = UsernamePasswordAuthenticationToken.authenticated(
                         principal, token.get(), principal.getAuthorities());
