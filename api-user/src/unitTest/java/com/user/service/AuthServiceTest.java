@@ -4,9 +4,15 @@ import com.storage.entity.Account;
 import com.storage.entity.User;
 import com.storage.repository.AccountRepository;
 import com.storage.repository.UserRepository;
+import com.user.domain.user.UserUpdater;
+import com.user.dto.request.LoginRequest;
 import com.user.dto.request.UserRegisterRequest;
+import com.user.dto.response.TokenResponse;
+import com.user.support.fixture.dto.request.LoginRequestFixtureFactory;
 import com.user.support.fixture.dto.request.UserRegisterRequestFixtureFactory;
+import com.user.support.fixture.entity.UserFixtureFactory;
 import com.user.utils.error.CommonException;
+import com.user.utils.token.JwtTokenProvider;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,8 +24,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.util.Optional;
 
 import static com.user.enums.ErrorType.DUPLICATED_EMAIL;
+import static com.user.enums.ErrorType.LOGIN_FAIL;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.mock;
@@ -36,6 +44,10 @@ class AuthServiceTest {
     private UserRepository userRepository;
     @Mock
     private PasswordEncoder passwordEncoder;
+    @Mock
+    private UserUpdater userUpdater;
+    @Mock
+    private JwtTokenProvider jwtTokenProvider;
 
     @Test
     @DisplayName("고유한 이메일로 사용자 등록시 사용자와 계정이 생성되어야 한다")
@@ -64,5 +76,52 @@ class AuthServiceTest {
         assertThatThrownBy(() -> authService.register(request))
                 .isInstanceOf(CommonException.class)
                 .hasMessage(DUPLICATED_EMAIL.getMessage());
+    }
+
+    @Test
+    @DisplayName("유효한 이메일과 패스워드로 로그인이 성공하면 토큰이 반환된다")
+    void successfulLoginReturnsTokenResponse() {
+        // given
+        LoginRequest loginRequest = LoginRequestFixtureFactory.create();
+        User user = UserFixtureFactory.create();
+        given(userRepository.findByAccountEmail(loginRequest.email())).willReturn(Optional.of(user));
+        given(passwordEncoder.matches(loginRequest.password(), user.getAccount().getPassword())).willReturn(true);
+        given(jwtTokenProvider.generateToken(any(), any(), any())).willReturn("accessToken", "refreshToken");
+
+        // when
+        TokenResponse tokens = assertDoesNotThrow(() -> authService.login(loginRequest));
+
+        // then
+        assertEquals("accessToken", tokens.accessToken());
+        assertEquals("refreshToken", tokens.refreshToken());
+        then(userUpdater).should().updateRefreshToken(user, "refreshToken");
+    }
+
+    @Test
+    @DisplayName("가입하지 않은 이메일로 로그인 시 예외가 발생해야 한다")
+    void loginWithNotRegisteredEmail() {
+        // given
+        LoginRequest loginRequest = LoginRequestFixtureFactory.create();
+        given(userRepository.findByAccountEmail(loginRequest.email())).willReturn(Optional.empty());
+
+        // when & then
+        assertThatThrownBy(() -> authService.login(loginRequest))
+                .isInstanceOf(CommonException.class)
+                .hasMessage(LOGIN_FAIL.getMessage());
+    }
+
+    @Test
+    @DisplayName("패스워드가 일치하지 않는 경우 로그인 시 예외가 발생해야 한다")
+    void loginWithNotMatchedPassword() {
+        // given
+        LoginRequest loginRequest = LoginRequestFixtureFactory.create();
+        User user = UserFixtureFactory.create();
+        given(userRepository.findByAccountEmail(loginRequest.email())).willReturn(Optional.of(user));
+        given(passwordEncoder.matches(loginRequest.password(), user.getAccount().getPassword())).willReturn(false);
+
+        // when & then
+        assertThatThrownBy(() -> authService.login(loginRequest))
+                .isInstanceOf(CommonException.class)
+                .hasMessage(LOGIN_FAIL.getMessage());
     }
 }
