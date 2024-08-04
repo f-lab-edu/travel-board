@@ -15,6 +15,7 @@ import java.time.Duration;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import static com.user.enums.TokenType.ACCESS;
@@ -199,4 +200,56 @@ class JwtTokenProviderTest {
         // then
         assertThat(result).isEqualTo(userId);
     }
+
+    @Test
+    @DisplayName("유효한 Authorization 헤더의 토큰은 추출할 수 있다")
+    public void extractTokenFromHeader() {
+        // given
+        String authorization = "Bearer validToken";
+
+        // when
+        Optional<String> token = jwtTokenProvider.extractTokenFromHeader(authorization);
+
+        // then
+        assertThat(token).isPresent().hasValue("validToken");
+    }
+
+    @TestFactory
+    Stream<DynamicTest> emptyTextAuthorizationHeadersReturnsEmpty() {
+        // given
+        List<String> authorizations = List.of("", " ");
+
+        // when & then
+        return authorizations.stream()
+                .map(authorization -> dynamicTest("토큰이 문자열이 아니면 Optional.empty를 반환한다",
+                        () -> assertThat(jwtTokenProvider.extractTokenFromHeader(authorization))
+                                .isEmpty()));
+    }
+
+    @Test
+    @DisplayName("Authorization 헤더가 null이면 Optional.empty를 반환한다")
+    public void nullAuthorizationHeaderReturnsEmpty() {
+        // given
+        String authorization = null;
+
+        // when
+        Optional<String> token = jwtTokenProvider.extractTokenFromHeader(authorization);
+
+        // then
+        assertThat(token).isEmpty();
+    }
+
+    @Test
+    @DisplayName("Authorization 헤더가 Bearer로 시작하지 않으면 Optional.empty를 반환한다")
+    public void authorizationHeaderWithoutBearerReturnsEmpty() {
+        // given
+        String authorization = "Token InvalidToken";
+
+        // when
+        Optional<String> token = jwtTokenProvider.extractTokenFromHeader(authorization);
+
+        // then
+        assertThat(token).isEmpty();
+    }
+
 }
