@@ -26,6 +26,7 @@ import java.util.Optional;
 
 import static com.user.enums.ErrorType.DUPLICATED_EMAIL;
 import static com.user.enums.ErrorType.LOGIN_FAIL;
+import static com.user.enums.ErrorType.UNAUTHORIZED_TOKEN;
 import static com.user.enums.ErrorType.USER_NOT_FOUND;
 import static com.user.enums.TokenType.REFRESH;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -178,7 +179,7 @@ class AuthServiceTest {
     }
 
     @Test
-    @DisplayName("유효한 리프레시 토큰이더라도 사용자가 가지지 않으면 예외가 발생한다")
+    @DisplayName("유효한 리프레시 토큰이더라도 사용자가 가지지 않으면 예외가 발생한다. 예상 상황 이중 로그인 방지")
     void validRefreshTokenButUserNotfoundThrowsCommonException() {
         // given
         String refreshToken = "validRefreshToken";
@@ -199,10 +200,11 @@ class AuthServiceTest {
         // given
         String refreshToken = "invalidRefreshToken";
 
-        given(jwtTokenProvider.getUserId(REFRESH, refreshToken)).willThrow(CommonException.class);
+        given(jwtTokenProvider.getUserId(REFRESH, refreshToken)).willThrow(new CommonException(UNAUTHORIZED_TOKEN));
 
         // when && then
         assertThatThrownBy(() -> authService.reissueAccessToken(refreshToken))
-                .isInstanceOf(CommonException.class);
+                .isInstanceOf(CommonException.class)
+                .hasMessage(UNAUTHORIZED_TOKEN.getMessage());
     }
 }
