@@ -4,6 +4,7 @@ import com.storage.entity.Account;
 import com.storage.entity.User;
 import com.storage.repository.AccountRepository;
 import com.storage.repository.UserRepository;
+import com.user.config.security.UserPrincipal;
 import com.user.domain.user.UserUpdater;
 import com.user.dto.request.LoginRequest;
 import com.user.dto.request.UserRegisterRequest;
@@ -25,6 +26,8 @@ import java.util.Optional;
 
 import static com.user.enums.ErrorType.DUPLICATED_EMAIL;
 import static com.user.enums.ErrorType.LOGIN_FAIL;
+import static com.user.enums.ErrorType.USER_NOT_FOUND;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -123,5 +126,33 @@ class AuthServiceTest {
         assertThatThrownBy(() -> authService.login(loginRequest))
                 .isInstanceOf(CommonException.class)
                 .hasMessage(LOGIN_FAIL.getMessage());
+    }
+
+    @Test
+    @DisplayName("존재하는 유저 아이디가 주어지면 유저 프린시펄이 반환된다")
+    void existUserIdReturnsUserPrincipal() {
+        // given
+        Long userId = 1L;
+        User user = UserFixtureFactory.create();
+        given(userRepository.findByIdWithAccount(userId)).willReturn(Optional.of(user));
+
+        // when
+        UserPrincipal userPrincipal = authService.getUserPrincipal(userId);
+
+        // then
+        assertThat(userPrincipal.getUser()).isEqualTo(user);
+    }
+
+    @Test
+    @DisplayName("존재하지 않은 유저 아이디가 주어지면 예외가 발생한다")
+    void nonExistUserIdThrowsCommonException() {
+        // given
+        Long userId = 1L;
+        given(userRepository.findByIdWithAccount(userId)).willReturn(Optional.empty());
+
+        // when && then
+        assertThatThrownBy(() -> authService.getUserPrincipal(userId))
+                .isInstanceOf(CommonException.class)
+                .hasMessage(USER_NOT_FOUND.getMessage());
     }
 }
