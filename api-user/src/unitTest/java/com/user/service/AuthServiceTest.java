@@ -27,6 +27,7 @@ import java.util.Optional;
 import static com.user.enums.ErrorType.DUPLICATED_EMAIL;
 import static com.user.enums.ErrorType.LOGIN_FAIL;
 import static com.user.enums.ErrorType.USER_NOT_FOUND;
+import static com.user.enums.TokenType.REFRESH;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -154,5 +155,54 @@ class AuthServiceTest {
         assertThatThrownBy(() -> authService.getUserPrincipal(userId))
                 .isInstanceOf(CommonException.class)
                 .hasMessage(USER_NOT_FOUND.getMessage());
+    }
+
+    @Test
+    @DisplayName("유효한 리프레시 토큰이 주어지면 엑세스토큰을 생성한다")
+    void validRefreshTokenReturnsNewAccessToken() {
+        // given
+        String refreshToken = "validRefreshToken";
+        Long userId = 1L;
+        User user = UserFixtureFactory.create();
+        String expectedAccessToken = "newAccessToken";
+
+        given(jwtTokenProvider.getUserId(REFRESH, refreshToken)).willReturn(userId);
+        given(userRepository.findByIdAndRefreshToken(userId, refreshToken)).willReturn(Optional.of(user));
+        given(jwtTokenProvider.generateToken(any(), any(), any())).willReturn(expectedAccessToken);
+
+        // when
+        String accessToken = authService.reissueAccessToken(refreshToken);
+
+        // then
+        assertThat(accessToken).isEqualTo(expectedAccessToken);
+    }
+
+    @Test
+    @DisplayName("유효한 리프레시 토큰이더라도 사용자가 가지지 않으면 예외가 발생한다")
+    void validRefreshTokenButUserNotfoundThrowsCommonException() {
+        // given
+        String refreshToken = "validRefreshToken";
+        Long userId = 1L;
+
+        given(jwtTokenProvider.getUserId(REFRESH, refreshToken)).willReturn(userId);
+        given(userRepository.findByIdAndRefreshToken(userId, refreshToken)).willReturn(Optional.empty());
+
+        // when && then
+        assertThatThrownBy(() -> authService.reissueAccessToken(refreshToken))
+                .isInstanceOf(CommonException.class)
+                .hasMessage(USER_NOT_FOUND.getMessage());
+    }
+
+    @Test
+    @DisplayName("유효하지 않은 리프레시 토큰이 주어지면 예외가 발생한다")
+    void invalidRefreshTokenThrowsCommonException() {
+        // given
+        String refreshToken = "invalidRefreshToken";
+
+        given(jwtTokenProvider.getUserId(REFRESH, refreshToken)).willThrow(CommonException.class);
+
+        // when && then
+        assertThatThrownBy(() -> authService.reissueAccessToken(refreshToken))
+                .isInstanceOf(CommonException.class);
     }
 }
