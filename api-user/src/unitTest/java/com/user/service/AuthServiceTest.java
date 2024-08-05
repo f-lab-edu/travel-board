@@ -11,6 +11,7 @@ import com.user.dto.request.UserRegisterRequest;
 import com.user.dto.response.TokenResponse;
 import com.user.support.fixture.dto.request.LoginRequestFixtureFactory;
 import com.user.support.fixture.dto.request.UserRegisterRequestFixtureFactory;
+import com.user.support.fixture.entity.AccountFixtureFactory;
 import com.user.support.fixture.entity.UserFixtureFactory;
 import com.user.utils.error.CommonException;
 import com.user.utils.token.JwtTokenProvider;
@@ -88,7 +89,7 @@ class AuthServiceTest {
     void successfulLoginReturnsTokenResponse() {
         // given
         LoginRequest loginRequest = LoginRequestFixtureFactory.create();
-        User user = UserFixtureFactory.create();
+        User user = UserFixtureFactory.create(AccountFixtureFactory.create());
         given(userRepository.findByAccountEmail(loginRequest.email())).willReturn(Optional.of(user));
         given(passwordEncoder.matches(loginRequest.password(), user.getAccount().getPassword())).willReturn(true);
         given(jwtTokenProvider.generateToken(any(), any(), any())).willReturn("accessToken", "refreshToken");
@@ -120,7 +121,7 @@ class AuthServiceTest {
     void loginWithNotMatchedPassword() {
         // given
         LoginRequest loginRequest = LoginRequestFixtureFactory.create();
-        User user = UserFixtureFactory.create();
+        User user = UserFixtureFactory.create(AccountFixtureFactory.create());
         given(userRepository.findByAccountEmail(loginRequest.email())).willReturn(Optional.of(user));
         given(passwordEncoder.matches(loginRequest.password(), user.getAccount().getPassword())).willReturn(false);
 
@@ -135,7 +136,7 @@ class AuthServiceTest {
     void existUserIdReturnsUserPrincipal() {
         // given
         Long userId = 1L;
-        User user = UserFixtureFactory.create();
+        User user = UserFixtureFactory.create(AccountFixtureFactory.create());
         given(userRepository.findByIdWithAccount(userId)).willReturn(Optional.of(user));
 
         // when
@@ -164,7 +165,7 @@ class AuthServiceTest {
         // given
         String refreshToken = "validRefreshToken";
         Long userId = 1L;
-        User user = UserFixtureFactory.create();
+        User user = UserFixtureFactory.create(AccountFixtureFactory.create());
         String expectedAccessToken = "newAccessToken";
 
         given(jwtTokenProvider.getUserId(REFRESH, refreshToken)).willReturn(userId);
