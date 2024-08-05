@@ -11,6 +11,7 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CONFLICT;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 @Getter
@@ -22,7 +23,7 @@ public enum ErrorType {
     DUPLICATED_EMAIL(CONFLICT, "Email is already in use", INFO),
     UNAUTHORIZED_TOKEN(UNAUTHORIZED, "Unauthorized token", INFO),
     LOGIN_FAIL(UNAUTHORIZED, "Invalid email or password", INFO),
-    USER_NOT_FOUND(UNAUTHORIZED, "User not found", INFO),
+    USER_NOT_FOUND(NOT_FOUND, "User not found", INFO),
     ACCESS_DENIED(FORBIDDEN, "Access denied", INFO);
 
     private final HttpStatus status;
