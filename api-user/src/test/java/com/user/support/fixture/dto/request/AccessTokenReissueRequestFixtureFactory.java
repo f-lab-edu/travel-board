@@ -8,6 +8,10 @@ public class AccessTokenReissueRequestFixtureFactory {
 
     private static final String DEFAULT_REFRESH_TOKEN = "refreshToken.refreshToken.refreshToken";
 
+    public static AccessTokenReissueRequest create(String refreshToken) {
+        return new AccessTokenReissueRequest(refreshToken);
+    }
+
     public static AccessTokenReissueRequest createMockRefreshToken() {
         return new AccessTokenReissueRequest(DEFAULT_REFRESH_TOKEN);
     }
