@@ -210,6 +210,7 @@ public class AuthApiTest extends E2eTestSupport {
     }
 
     @TestFactory
+    @DisplayName("로그인 시 이메일 유효성 검증에 실패한다")
     Stream<DynamicTest> loginEmailValidationFailure() {
         return LoginRequestFixtureFactory.getInvalidEmailRequests().stream()
                 .map(request -> dynamicTest(
@@ -228,6 +229,7 @@ public class AuthApiTest extends E2eTestSupport {
     }
 
     @TestFactory
+    @DisplayName("로그인 시 비밀번호 유효성 검증에 실패한다")
     Stream<DynamicTest> loginPasswordValidationFailure() {
         return LoginRequestFixtureFactory.getInvalidPasswordRequests().stream()
                 .map(request -> dynamicTest(
@@ -312,6 +314,7 @@ public class AuthApiTest extends E2eTestSupport {
     }
 
     @TestFactory
+    @DisplayName("액세스 토큰 재발급 시 리프레시 토큰 유효성 검증에 실패한다")
     Stream<DynamicTest> reissueAccessTokenValidationFailure() {
         return AccessTokenReissueRequestFixtureFactory.getInvalidRefreshTokenRequests().stream()
                 .map(request -> dynamicTest(
