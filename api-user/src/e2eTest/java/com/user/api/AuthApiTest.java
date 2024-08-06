@@ -197,7 +197,6 @@ public class AuthApiTest extends E2eTestSupport {
 
         LoginRequest request = new LoginRequest(account.getEmail(), "password");
 
-        // when
         given()
                 .contentType(JSON)
                 .body(request)
@@ -253,7 +252,6 @@ public class AuthApiTest extends E2eTestSupport {
         // given
         LoginRequest request = LoginRequestFixtureFactory.create();
 
-        // when
         given()
                 .contentType(JSON)
                 .body(request)
@@ -276,7 +274,6 @@ public class AuthApiTest extends E2eTestSupport {
 
         LoginRequest request = new LoginRequest(account.getEmail(), "invalidPassword");
 
-        // when
         given()
                 .contentType(JSON)
                 .body(request)
@@ -302,7 +299,6 @@ public class AuthApiTest extends E2eTestSupport {
         userRepository.save(user);
         AccessTokenReissueRequest request = AccessTokenReissueRequestFixtureFactory.create(refreshToken);
 
-        // when
         given()
                 .contentType(JSON)
                 .body(request)
@@ -338,7 +334,6 @@ public class AuthApiTest extends E2eTestSupport {
         // given
         AccessTokenReissueRequest request = AccessTokenReissueRequestFixtureFactory.createMockRefreshToken();
 
-        // when
         given()
                 .contentType(JSON)
                 .body(request)
@@ -362,7 +357,6 @@ public class AuthApiTest extends E2eTestSupport {
         String refreshToken = jwtTokenProvider.generateToken(REFRESH, user.getId(), new Date());
         AccessTokenReissueRequest request = AccessTokenReissueRequestFixtureFactory.create(refreshToken);
 
-        // when
         given()
                 .contentType(JSON)
                 .body(request)
@@ -384,7 +378,6 @@ public class AuthApiTest extends E2eTestSupport {
         String refreshToken = jwtTokenProvider.generateToken(REFRESH, 1L, date8DaysAgo);
         AccessTokenReissueRequest request = AccessTokenReissueRequestFixtureFactory.create(refreshToken);
 
-        // when
         given()
                 .contentType(JSON)
                 .body(request)
