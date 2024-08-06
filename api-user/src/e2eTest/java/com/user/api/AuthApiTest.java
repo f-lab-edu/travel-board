@@ -300,7 +300,7 @@ public class AuthApiTest extends E2eTestSupport {
         String refreshToken = jwtTokenProvider.generateToken(REFRESH, user.getId(), new Date());
         user.setRefreshToken(refreshToken);
         userRepository.save(user);
-        AccessTokenReissueRequest request = new AccessTokenReissueRequest(refreshToken);
+        AccessTokenReissueRequest request = AccessTokenReissueRequestFixtureFactory.create(refreshToken);
 
         // when
         given()
@@ -360,7 +360,7 @@ public class AuthApiTest extends E2eTestSupport {
         userRepository.save(user);
 
         String refreshToken = jwtTokenProvider.generateToken(REFRESH, user.getId(), new Date());
-        AccessTokenReissueRequest request = new AccessTokenReissueRequest(refreshToken);
+        AccessTokenReissueRequest request = AccessTokenReissueRequestFixtureFactory.create(refreshToken);
 
         // when
         given()
@@ -382,7 +382,7 @@ public class AuthApiTest extends E2eTestSupport {
         // Therefore, try using the refresh token created 8 days ago
         Date date8DaysAgo = new Date(System.currentTimeMillis() - 8 * 24 * 60 * 60 * 1000);
         String refreshToken = jwtTokenProvider.generateToken(REFRESH, 1L, date8DaysAgo);
-        AccessTokenReissueRequest request = new AccessTokenReissueRequest(refreshToken);
+        AccessTokenReissueRequest request = AccessTokenReissueRequestFixtureFactory.create(refreshToken);
 
         // when
         given()
