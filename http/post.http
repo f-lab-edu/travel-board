@@ -1,0 +1,12 @@
+### 게시물 작성
+
+POST http://localhost:8080/posts
+content-type: application/json
+Authorization: Bearer {{ accessToken }}
+
+{
+  "location": "싱가폴ddddddddddddddddddddddddddddddddd",
+  "title": "싱가폴 여행",
+  "content": "싱가폴 여행을 다녀왔습니다.",
+  "needPremium": true
+}
