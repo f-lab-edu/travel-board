@@ -8,9 +8,11 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
 
 @Entity
@@ -22,7 +24,7 @@ public class Post extends BaseEntity {
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name = "FK_post_user_id"))
     private User author;
 
@@ -40,4 +42,14 @@ public class Post extends BaseEntity {
 
     @Column
     private boolean needPremium;
+
+    @Builder
+    public Post(User author, String location, String title, String content, int views, boolean needPremium) {
+        this.author = author;
+        this.location = location;
+        this.title = title;
+        this.content = content;
+        this.views = views;
+        this.needPremium = needPremium;
+    }
 }
