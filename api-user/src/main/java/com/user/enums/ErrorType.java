@@ -24,7 +24,8 @@ public enum ErrorType {
     UNAUTHORIZED_TOKEN(UNAUTHORIZED, "Unauthorized token", INFO),
     LOGIN_FAIL(UNAUTHORIZED, "Invalid email or password", INFO),
     USER_NOT_FOUND(NOT_FOUND, "User not found", INFO),
-    ACCESS_DENIED(FORBIDDEN, "Access denied", INFO);
+    ACCESS_DENIED(FORBIDDEN, "Access denied", INFO),
+    LOGIN_REQUIRED(UNAUTHORIZED, "Login required", INFO);
 
     private final HttpStatus status;
     private final String message;
