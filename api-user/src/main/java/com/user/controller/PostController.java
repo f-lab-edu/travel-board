@@ -2,7 +2,6 @@ package com.user.controller;
 
 import com.storage.entity.User;
 import com.user.config.security.CurrentUser;
-import com.user.config.security.LoginRequired;
 import com.user.dto.request.PostRegisterRequest;
 import com.user.service.PostService;
 import jakarta.validation.Valid;
@@ -22,7 +21,6 @@ public class PostController {
 
     private final PostService postService;
 
-    @LoginRequired
     @PostMapping
     public ResponseEntity<Void> registerPost(@CurrentUser User user,
                                              @RequestBody @Valid PostRegisterRequest request) {
