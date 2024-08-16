@@ -1,7 +1,5 @@
-package com.user.config;
+package com.user.config.security;
 
-import com.user.config.security.CurrentUser;
-import com.user.config.security.UserPrincipal;
 import com.user.utils.error.CommonException;
 import org.springframework.core.MethodParameter;
 import org.springframework.security.core.Authentication;
