@@ -22,17 +22,13 @@ public class CurrentUserArgumentResolver implements HandlerMethodArgumentResolve
 
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
-        CurrentUser currentUserAnnotation = parameter.getParameterAnnotation(CurrentUser.class);
-        boolean required = currentUserAnnotation.required();
-
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        boolean isAuthenticated = isAuthenticatedUser(authentication);
 
-        if (required && !isAuthenticated) {
+        if (parameter.getParameterAnnotation(CurrentUser.class).required() && !isAuthenticatedUser(authentication)) {
             throw new CommonException(LOGIN_REQUIRED);
         }
 
-        return isAuthenticated ? ((UserPrincipal) authentication.getPrincipal()).getUser() : null;
+        return isAuthenticatedUser(authentication) ? ((UserPrincipal) authentication.getPrincipal()).getUser() : null;
     }
 
     private boolean isAuthenticatedUser(Authentication authentication) {
