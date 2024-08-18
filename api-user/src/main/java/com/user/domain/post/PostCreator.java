@@ -12,7 +12,7 @@ public class PostCreator {
 
     private final PostRepository postRepository;
 
-    public Post create(User user, String location, String title, String content, Boolean needPremium) {
+    public void create(User user, String location, String title, String content, Boolean needPremium) {
         Post post = Post.builder()
                 .author(user)
                 .location(location)
@@ -21,6 +21,6 @@ public class PostCreator {
                 .views(0)
                 .needPremium(needPremium)
                 .build();
-        return postRepository.save(post);
+        postRepository.save(post);
     }
 }

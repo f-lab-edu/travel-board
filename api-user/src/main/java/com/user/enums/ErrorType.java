@@ -12,6 +12,7 @@ import static org.springframework.http.HttpStatus.CONFLICT;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.PAYMENT_REQUIRED;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 @Getter
@@ -25,7 +26,9 @@ public enum ErrorType {
     LOGIN_FAIL(UNAUTHORIZED, "Invalid email or password", INFO),
     USER_NOT_FOUND(NOT_FOUND, "User not found", INFO),
     ACCESS_DENIED(FORBIDDEN, "Access denied", INFO),
-    LOGIN_REQUIRED(UNAUTHORIZED, "Login required", INFO);
+    LOGIN_REQUIRED(UNAUTHORIZED, "Login required", INFO),
+    PRODUCT_NOT_FOUND(NOT_FOUND, "Product not found", INFO),
+    PRODUCT_PREMIUM_REQUIRED(PAYMENT_REQUIRED, "Product premium required", INFO);
 
     private final HttpStatus status;
     private final String message;
