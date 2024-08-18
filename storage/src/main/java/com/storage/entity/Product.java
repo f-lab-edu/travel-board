@@ -10,6 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -39,4 +40,12 @@ public class Product extends BaseEntity {
 
     @Column
     private LocalDateTime endAt;
+
+    @Builder
+    private Product(User user, ProductLevel level, LocalDateTime startAt, LocalDateTime endAt) {
+        this.user = user;
+        this.level = level;
+        this.startAt = startAt;
+        this.endAt = endAt;
+    }
 }
