@@ -47,7 +47,7 @@ class PostServiceTest {
         // given
         Account account = AccountFixtureFactory.create();
         User user = UserFixtureFactory.create(account);
-        PostRegisterRequest request = PostRegisterRequestFixtureFactory.createWith(false);
+        PostRegisterRequest request = PostRegisterRequestFixtureFactory.createWithNeedPremium(false);
 
         // when
         postService.register(user, request);
@@ -64,7 +64,7 @@ class PostServiceTest {
         User user = UserFixtureFactory.create(account);
         Product product = ProductFixtureFactory.createWith(user, ProductLevel.PREMIUM);
         given(productFinder.find(user)).willReturn(product);
-        PostRegisterRequest request = PostRegisterRequestFixtureFactory.createWith(true);
+        PostRegisterRequest request = PostRegisterRequestFixtureFactory.createWithNeedPremium(true);
 
         // when
         postService.register(user, request);
@@ -81,7 +81,7 @@ class PostServiceTest {
         Account account = AccountFixtureFactory.create();
         User user = UserFixtureFactory.create(account);
         given(productFinder.find(user)).willThrow(CommonException.class);
-        PostRegisterRequest request = PostRegisterRequestFixtureFactory.createWith(true);
+        PostRegisterRequest request = PostRegisterRequestFixtureFactory.createWithNeedPremium(true);
 
         // when && then
         assertThatThrownBy(() -> postService.register(user, request))
@@ -97,7 +97,7 @@ class PostServiceTest {
         Product product = ProductFixtureFactory.createWith(user, ProductLevel.PREMIUM);
         given(productFinder.find(user)).willReturn(product);
         willThrow(CommonException.class).given(productValidator).validate(eq(product), any(LocalDateTime.class));
-        PostRegisterRequest request = PostRegisterRequestFixtureFactory.createWith(true);
+        PostRegisterRequest request = PostRegisterRequestFixtureFactory.createWithNeedPremium(true);
 
         // when && then
         assertThatThrownBy(() -> postService.register(user, request))
