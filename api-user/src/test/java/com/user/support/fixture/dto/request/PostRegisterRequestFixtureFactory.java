@@ -11,7 +11,7 @@ public class PostRegisterRequestFixtureFactory {
     private static final String DEFAULT_CONTENT = "content";
     private static final boolean DEFAULT_NEED_PREMIUM = false;
 
-    public static PostRegisterRequest createWith(boolean needPremium) {
+    public static PostRegisterRequest createWithNeedPremium(boolean needPremium) {
         return new PostRegisterRequest(DEFAULT_LOCATION, DEFAULT_TITLE, DEFAULT_CONTENT, needPremium);
     }
 

@@ -71,7 +71,7 @@ public class PostApiTest extends E2eTestSupport {
         // given
         String accessToken = createAndSaveUserWithAccessToken();
 
-        PostRegisterRequest request = PostRegisterRequestFixtureFactory.createWith(false);
+        PostRegisterRequest request = PostRegisterRequestFixtureFactory.createWithNeedPremium(false);
 
         given()
                 .header(AUTHORIZATION, "Bearer " + accessToken)
@@ -96,7 +96,7 @@ public class PostApiTest extends E2eTestSupport {
         productRepository.save(product);
         String accessToken = jwtTokenProvider.generateToken(ACCESS, user.getId(), new Date());
 
-        PostRegisterRequest request = PostRegisterRequestFixtureFactory.createWith(true);
+        PostRegisterRequest request = PostRegisterRequestFixtureFactory.createWithNeedPremium(true);
 
         given()
                 .header(AUTHORIZATION, "Bearer " + accessToken)
@@ -112,7 +112,7 @@ public class PostApiTest extends E2eTestSupport {
     @DisplayName("게시물 등록시 access token이 없으면 게시물 등록에 실패한다")
     void registerPostWithoutAccessToken() {
         // given
-        PostRegisterRequest request = PostRegisterRequestFixtureFactory.createWith(false);
+        PostRegisterRequest request = PostRegisterRequestFixtureFactory.createWithNeedPremium(false);
 
         given()
                 .contentType(JSON)
@@ -138,7 +138,7 @@ public class PostApiTest extends E2eTestSupport {
         productRepository.save(product);
         String accessToken = jwtTokenProvider.generateToken(ACCESS, user.getId(), new Date());
 
-        PostRegisterRequest request = PostRegisterRequestFixtureFactory.createWith(true);
+        PostRegisterRequest request = PostRegisterRequestFixtureFactory.createWithNeedPremium(true);
 
         given()
                 .header(AUTHORIZATION, "Bearer " + accessToken)
@@ -166,7 +166,7 @@ public class PostApiTest extends E2eTestSupport {
         productRepository.save(product);
         String accessToken = jwtTokenProvider.generateToken(ACCESS, user.getId(), new Date());
 
-        PostRegisterRequest request = PostRegisterRequestFixtureFactory.createWith(true);
+        PostRegisterRequest request = PostRegisterRequestFixtureFactory.createWithNeedPremium(true);
 
         given()
                 .header(AUTHORIZATION, "Bearer " + accessToken)
@@ -187,7 +187,7 @@ public class PostApiTest extends E2eTestSupport {
         // given
         String accessToken = createAndSaveUserWithAccessToken();
 
-        PostRegisterRequest request = PostRegisterRequestFixtureFactory.createWith(true);
+        PostRegisterRequest request = PostRegisterRequestFixtureFactory.createWithNeedPremium(true);
 
         given()
                 .header(AUTHORIZATION, "Bearer " + accessToken)

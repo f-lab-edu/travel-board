@@ -60,7 +60,7 @@ class PostControllerTest {
     @DisplayName("게시물 등록이 성공하면 201 Created 응답을 반환한다.")
     void postRegisterSuccess() throws Exception {
         // given
-        PostRegisterRequest request = PostRegisterRequestFixtureFactory.createWith(true);
+        PostRegisterRequest request = PostRegisterRequestFixtureFactory.createWithNeedPremium(true);
         String json = objectMapper.writeValueAsString(request);
         // postService.register method is called, but it just returns without actually doing anything.
 
@@ -76,7 +76,7 @@ class PostControllerTest {
     @DisplayName("로그인 하지 않으면 게시물 등록시 401 Unauthorized 응답을 반환한다")
     void postRegisterWhenNotLogin() throws Exception {
         // given
-        PostRegisterRequest request = PostRegisterRequestFixtureFactory.createWith(true);
+        PostRegisterRequest request = PostRegisterRequestFixtureFactory.createWithNeedPremium(true);
         String json = objectMapper.writeValueAsString(request);
 
         // when && then
@@ -93,7 +93,7 @@ class PostControllerTest {
     @DisplayName("post.register 요청시 PREMIUM 회원 아닌데 PREMIUM 게시물을 등록하는 경우 402 Payment Required 응답을 반환한다")
     void postRegisterWhenNotPremium() throws Exception {
         // given
-        PostRegisterRequest request = PostRegisterRequestFixtureFactory.createWith(true);
+        PostRegisterRequest request = PostRegisterRequestFixtureFactory.createWithNeedPremium(true);
         String json = objectMapper.writeValueAsString(request);
         doThrow(new CommonException(PRODUCT_PREMIUM_REQUIRED)).when(postService).register(any(User.class), eq(request));
 
@@ -111,7 +111,7 @@ class PostControllerTest {
     @DisplayName("post.register 요청시 User가 가진 상품이 없으면 404 Not Found 응답을 반환한다")
     void postRegisterWhenProductNotFound() throws Exception {
         // given
-        PostRegisterRequest request = PostRegisterRequestFixtureFactory.createWith(true);
+        PostRegisterRequest request = PostRegisterRequestFixtureFactory.createWithNeedPremium(true);
         String json = objectMapper.writeValueAsString(request);
         doThrow(new CommonException(PRODUCT_NOT_FOUND)).when(postService).register(any(User.class), eq(request));
 
