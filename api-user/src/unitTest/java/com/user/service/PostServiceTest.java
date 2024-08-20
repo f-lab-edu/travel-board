@@ -1,10 +1,11 @@
 package com.user.service;
 
 import com.storage.entity.Account;
+import com.storage.entity.Post;
 import com.storage.entity.Product;
 import com.storage.entity.ProductLevel;
 import com.storage.entity.User;
-import com.user.domain.post.PostCreator;
+import com.user.domain.user.PostSaver;
 import com.user.domain.user.ProductFinder;
 import com.user.domain.user.ProductValidator;
 import com.user.dto.request.PostRegisterRequest;
@@ -39,7 +40,7 @@ class PostServiceTest {
     @Mock
     private ProductValidator productValidator;
     @Mock
-    private PostCreator postCreator;
+    private PostSaver postSaver;
 
     @Test
     @DisplayName("프리미엄 게시글이 아니면 게시글은 바로 등록되어야 한다")
@@ -53,7 +54,7 @@ class PostServiceTest {
         postService.register(user, request);
 
         // then
-        then(postCreator).should().create(user, request.location(), request.title(), request.content(), request.needPremium());
+        then(postSaver).should().save(any(Post.class));
     }
 
     @Test
@@ -71,7 +72,7 @@ class PostServiceTest {
 
         // then
         then(productValidator).should().validatePremium(eq(product), any(LocalDateTime.class));
-        then(postCreator).should().create(user, request.location(), request.title(), request.content(), request.needPremium());
+        then(postSaver).should().save(any(Post.class));
     }
 
     @Test
