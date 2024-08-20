@@ -12,7 +12,7 @@ import static com.user.enums.ErrorType.PRODUCT_PREMIUM_REQUIRED;
 @Component
 public class ProductValidator {
     
-    public void validate(Product product, LocalDateTime now) {
+    public void validatePremium(Product product, LocalDateTime now) {
         if (!isPremium(product) || isExpired(product, now)) {
             throw new CommonException(PRODUCT_PREMIUM_REQUIRED);
         }
