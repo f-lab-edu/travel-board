@@ -44,7 +44,7 @@ public class Post extends BaseEntity {
     private boolean needPremium;
 
     @Builder
-    public Post(User author, String location, String title, String content, int views, boolean needPremium) {
+    private Post(User author, String location, String title, String content, int views, boolean needPremium) {
         this.author = author;
         this.location = location;
         this.title = title;
