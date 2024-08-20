@@ -70,7 +70,7 @@ class PostServiceTest {
         postService.register(user, request);
 
         // then
-        then(productValidator).should().validate(eq(product), any(LocalDateTime.class));
+        then(productValidator).should().validatePremium(eq(product), any(LocalDateTime.class));
         then(postCreator).should().create(user, request.location(), request.title(), request.content(), request.needPremium());
     }
 
@@ -96,7 +96,7 @@ class PostServiceTest {
         User user = UserFixtureFactory.create(account);
         Product product = ProductFixtureFactory.createWith(user, ProductLevel.PREMIUM);
         given(productFinder.find(user)).willReturn(product);
-        willThrow(CommonException.class).given(productValidator).validate(eq(product), any(LocalDateTime.class));
+        willThrow(CommonException.class).given(productValidator).validatePremium(eq(product), any(LocalDateTime.class));
         PostRegisterRequest request = PostRegisterRequestFixtureFactory.createWithNeedPremium(true);
 
         // when && then

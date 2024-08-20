@@ -27,40 +27,40 @@ class ProductValidatorTest {
 
     @Test
     @DisplayName("프리미엄 상품이면 예외가 발생하지 않아야 한다")
-    void validateDoesNotThrowExceptionForPremiumProduct() {
+    void validatePremiumDoesNotThrowExceptionForPremiumProduct() {
         // given
         User user = UserFixtureFactory.create(AccountFixtureFactory.create());
         Product product = ProductFixtureFactory.createWith(user, ProductLevel.PREMIUM);
         LocalDateTime now = product.getEndAt().minusDays(1L);
 
         // when && then
-        assertDoesNotThrow(() -> productValidator.validate(product, now));
+        assertDoesNotThrow(() -> productValidator.validatePremium(product, now));
     }
 
     @Test
     @DisplayName("프리미엄 상품이 아니면 예외가 발생한다.")
-    void validateThrowsExceptionForNotPremiumProduct() {
+    void validatePremiumThrowsExceptionForNotPremiumProduct() {
         // given
         User user = UserFixtureFactory.create(AccountFixtureFactory.create());
         Product product = ProductFixtureFactory.createWith(user, ProductLevel.BASIC);
         LocalDateTime now = product.getEndAt().minusDays(1L);
 
         // when && then
-        assertThatThrownBy(() -> productValidator.validate(product, now))
+        assertThatThrownBy(() -> productValidator.validatePremium(product, now))
                 .isInstanceOf(CommonException.class)
                 .hasMessage(PRODUCT_PREMIUM_REQUIRED.getMessage());
     }
 
     @Test
     @DisplayName("만료된 상품이면 예외가 발생한다.")
-    void validateThrowsExceptionForExpiredProduct() {
+    void validatePremiumThrowsExceptionForExpiredProduct() {
         // given
         User user = UserFixtureFactory.create(AccountFixtureFactory.create());
         Product product = ProductFixtureFactory.createWith(user, ProductLevel.PREMIUM);
         LocalDateTime now = product.getEndAt().plusDays(1L);
 
         // when && then
-        assertThatThrownBy(() -> productValidator.validate(product, now))
+        assertThatThrownBy(() -> productValidator.validatePremium(product, now))
                 .isInstanceOf(CommonException.class)
                 .hasMessage(PRODUCT_PREMIUM_REQUIRED.getMessage());
     }
