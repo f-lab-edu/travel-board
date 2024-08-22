@@ -5,8 +5,8 @@ import com.storage.entity.Post;
 import com.storage.entity.Product;
 import com.storage.entity.ProductLevel;
 import com.storage.entity.User;
-import com.user.domain.user.PostSaver;
-import com.user.domain.user.ProductFinder;
+import com.storage.repository.PostRepository;
+import com.storage.repository.ProductRepository;
 import com.user.domain.user.ProductValidator;
 import com.user.dto.request.PostRegisterRequest;
 import com.user.support.fixture.dto.request.PostRegisterRequestFixtureFactory;
@@ -22,13 +22,14 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
+import static com.user.enums.ErrorType.PRODUCT_PREMIUM_REQUIRED;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
-import static org.mockito.BDDMockito.willThrow;
 
 @ExtendWith(MockitoExtension.class)
 class PostServiceTest {
@@ -36,11 +37,11 @@ class PostServiceTest {
     @InjectMocks
     private PostService postService;
     @Mock
-    private ProductFinder productFinder;
-    @Mock
     private ProductValidator productValidator;
     @Mock
-    private PostSaver postSaver;
+    private PostRepository postRepository;
+    @Mock
+    private ProductRepository productRepository;
 
     @Test
     @DisplayName("프리미엄 게시글이 아니면 게시글은 바로 등록되어야 한다")
@@ -54,7 +55,7 @@ class PostServiceTest {
         postService.register(user, request);
 
         // then
-        then(postSaver).should().save(any(Post.class));
+        then(postRepository).should().save(any(Post.class));
     }
 
     @Test
@@ -64,15 +65,15 @@ class PostServiceTest {
         Account account = AccountFixtureFactory.create();
         User user = UserFixtureFactory.create(account);
         Product product = ProductFixtureFactory.createWith(user, ProductLevel.PREMIUM);
-        given(productFinder.find(user)).willReturn(product);
+        given(productRepository.findByUser(user)).willReturn(Optional.of(product));
+        given(productValidator.isPremiumProduct(eq(product), any(LocalDateTime.class))).willReturn(true);
         PostRegisterRequest request = PostRegisterRequestFixtureFactory.createWithNeedPremium(true);
 
         // when
         postService.register(user, request);
 
         // then
-        then(productValidator).should().validatePremium(eq(product), any(LocalDateTime.class));
-        then(postSaver).should().save(any(Post.class));
+        then(postRepository).should().save(any(Post.class));
     }
 
     @Test
@@ -81,7 +82,7 @@ class PostServiceTest {
         // given
         Account account = AccountFixtureFactory.create();
         User user = UserFixtureFactory.create(account);
-        given(productFinder.find(user)).willThrow(CommonException.class);
+        given(productRepository.findByUser(user)).willReturn(Optional.empty());
         PostRegisterRequest request = PostRegisterRequestFixtureFactory.createWithNeedPremium(true);
 
         // when && then
@@ -96,12 +97,13 @@ class PostServiceTest {
         Account account = AccountFixtureFactory.create();
         User user = UserFixtureFactory.create(account);
         Product product = ProductFixtureFactory.createWith(user, ProductLevel.PREMIUM);
-        given(productFinder.find(user)).willReturn(product);
-        willThrow(CommonException.class).given(productValidator).validatePremium(eq(product), any(LocalDateTime.class));
+        given(productRepository.findByUser(user)).willReturn(Optional.of(product));
+        given(productValidator.isPremiumProduct(eq(product), any(LocalDateTime.class))).willReturn(false);
         PostRegisterRequest request = PostRegisterRequestFixtureFactory.createWithNeedPremium(true);
 
         // when && then
         assertThatThrownBy(() -> postService.register(user, request))
-                .isInstanceOf(CommonException.class);
+                .isInstanceOf(CommonException.class)
+                .hasMessage(PRODUCT_PREMIUM_REQUIRED.getMessage());
     }
 }
