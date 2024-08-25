@@ -1,4 +1,4 @@
-package com.user.domain.user;
+package com.user.domain.product;
 
 import com.storage.entity.Product;
 import com.storage.entity.ProductLevel;

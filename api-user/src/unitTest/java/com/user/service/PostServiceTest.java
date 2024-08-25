@@ -7,7 +7,7 @@ import com.storage.entity.ProductLevel;
 import com.storage.entity.User;
 import com.storage.repository.PostRepository;
 import com.storage.repository.ProductRepository;
-import com.user.domain.user.ProductValidator;
+import com.user.domain.product.ProductValidator;
 import com.user.dto.request.PostRegisterRequest;
 import com.user.support.fixture.dto.request.PostRegisterRequestFixtureFactory;
 import com.user.support.fixture.entity.AccountFixtureFactory;
