@@ -6,7 +6,7 @@ import com.storage.entity.User;
 import com.storage.repository.PostRepository;
 import com.storage.repository.ProductRepository;
 import com.user.domain.post.PostCreator;
-import com.user.domain.user.ProductValidator;
+import com.user.domain.product.ProductValidator;
 import com.user.dto.request.PostRegisterRequest;
 import com.user.enums.ErrorType;
 import com.user.utils.error.CommonException;
