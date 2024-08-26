@@ -53,14 +53,12 @@ jobs:
       # Wait for server 60 seconds to be ready
       - name: Check api-user API health endpoint
         run: |
-          echo "Waiting for the server to be ready..."
           for i in {1..12}; do
-            response=$(curl --write-out "%{http_code}" --silent --output /dev/null http://localhost:8080/health)
-            if [ "$response" -eq 200 ]; then
-              echo "Server is ready! Received HTTP 200."
+            if curl --fail http://localhost:8080/health; then
+              echo "Success to connect to the server"
               exit 0
             else
-              echo "Received HTTP $response. Waiting for the server to be ready... ($i/12)"
+              echo "Waiting for the server to be ready... ($i/12)"
               sleep 5
             fi
           done
