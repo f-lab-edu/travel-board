@@ -7,7 +7,6 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.MySQLContainer;
-import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 
@@ -17,8 +16,12 @@ public class E2eTestSupport {
 
     private static final DockerImageName MYSQL_IMAGE = DockerImageName.parse("mysql:8");
 
-    @Container
-    static final MySQLContainer<?> MY_SQL_CONTAINER = new MySQLContainer<>(MYSQL_IMAGE);
+    static final MySQLContainer<?> MY_SQL_CONTAINER;
+
+    static {
+        MY_SQL_CONTAINER = new MySQLContainer<>(MYSQL_IMAGE);
+        MY_SQL_CONTAINER.start();
+    }
 
     @LocalServerPort
     int port;
