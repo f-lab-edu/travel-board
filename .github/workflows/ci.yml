@@ -43,3 +43,26 @@ jobs:
 
       - name: Build with Gradle
         run: ./gradlew build -x test
+
+      - name: Build Docker Image for api-user
+        run: docker build -t api-user:latest -f ./api-user/Dockerfile ./api-user
+
+      - name: Run Docker Container for api-user
+        run: docker run -d -p 8080:8080 --name api-user-container api-user:latest
+
+      # Wait for server 60 seconds to be ready
+      - name: Check api-user API health endpoint
+        run: |
+          for i in {1..12}; do
+            curl --fail http://localhost:8080/health && exit 0 || true
+            echo "Waiting for the server to be ready... ($i/12)"
+            sleep 5
+          done
+          echo "Server did not become ready in time."
+          docker logs api-user-container
+          exit 1
+
+      - name: Stop and remove Docker container
+        run: |
+          docker stop api-user-container
+          docker rm api-user-container
