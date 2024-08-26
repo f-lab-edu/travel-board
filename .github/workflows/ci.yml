@@ -53,10 +53,16 @@ jobs:
       # Wait for server 60 seconds to be ready
       - name: Check api-user API health endpoint
         run: |
+          echo "Waiting for the server to be ready..."
           for i in {1..12}; do
-            curl --fail http://localhost:8080/health && exit 0 || true
-            echo "Waiting for the server to be ready... ($i/12)"
-            sleep 5
+            response=$(curl --write-out "%{http_code}" --silent --output /dev/null http://localhost:8080/health)
+            if [ "$response" -eq 200 ]; then
+              echo "Server is ready! Received HTTP 200."
+              exit 0
+            else
+              echo "Received HTTP $response. Waiting for the server to be ready... ($i/12)"
+              sleep 5
+            fi
           done
           echo "Server did not become ready in time."
           docker logs api-user-container
