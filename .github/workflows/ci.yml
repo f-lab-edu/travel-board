@@ -112,7 +112,7 @@ jobs:
       - name: Check api-admin API health endpoint
         run: |
           for i in {1..12}; do
-            if curl --fail http://localhost:8080/health; then
+            if curl --fail http://localhost:8081/health; then
               echo "Success to connect to the server"
               exit 0
             else
