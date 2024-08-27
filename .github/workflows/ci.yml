@@ -102,14 +102,14 @@ jobs:
         with:
           name: build-artifacts
 
-      - name: Build Docker Image for api_admin
-        run: docker build -t api_admin:latest -f ./api_admin/Dockerfile ./api_admin
+      - name: Build Docker Image for api-admin
+        run: docker build -t api-admin:latest -f ./api-admin/Dockerfile ./api-admin
 
-      - name: Run Docker Container for api_admin
-        run: docker run -d -p 8081:8081 --name api_admin-container api_admin:latest
+      - name: Run Docker Container for api-admin
+        run: docker run -d -p 8081:8081 --name api-admin-container api-admin:latest
 
       # Wait for server 60 seconds to be ready
-      - name: Check api_admin API health endpoint
+      - name: Check api-admin API health endpoint
         run: |
           for i in {1..12}; do
             if curl --fail http://localhost:8080/health; then
@@ -121,10 +121,10 @@ jobs:
             fi
           done
           echo "Server did not become ready in time."
-          docker logs api_admin-container
+          docker logs api-admin-container
           exit 1
 
-      - name: Stop and remove Docker container api_admin-container
+      - name: Stop and remove Docker container api-admin-container
         run: |
-          docker stop api_admin-container
-          docker rm api_admin-container
+          docker stop api-admin-container
+          docker rm api-admin-container
