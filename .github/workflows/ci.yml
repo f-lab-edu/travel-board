@@ -14,7 +14,6 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -28,7 +27,7 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
-      - name: Cache Gradle dependencies
+      - name: Cache Gradle
         uses: actions/cache@v4
         with:
           path: |
@@ -43,6 +42,26 @@ jobs:
 
       - name: Build with Gradle
         run: ./gradlew build -x test
+
+      - name: Upload build artifacts for api-user and api-admin
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifacts
+          path: |
+            ./api-user/build/libs/api-user*.jar
+            ./api-admin/build/libs/api-admin*.jar
+
+  docker_build_api_user:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifacts
 
       - name: Build Docker Image for api-user
         run: docker build -t api-user:latest -f ./api-user/Dockerfile ./api-user
@@ -70,3 +89,42 @@ jobs:
         run: |
           docker stop api-user-container
           docker rm api-user-container
+
+  docker_build_api_admin:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifacts
+
+      - name: Build Docker Image for api_admin
+        run: docker build -t api_admin:latest -f ./api_admin/Dockerfile ./api_admin
+
+      - name: Run Docker Container for api_admin
+        run: docker run -d -p 8081:8081 --name api_admin-container api_admin:latest
+
+      # Wait for server 60 seconds to be ready
+      - name: Check api_admin API health endpoint
+        run: |
+          for i in {1..12}; do
+            if curl --fail http://localhost:8080/health; then
+              echo "Success to connect to the server"
+              exit 0
+            else
+              echo "Waiting for the server to be ready... ($i/12)"
+              sleep 5
+            fi
+          done
+          echo "Server did not become ready in time."
+          docker logs api_admin-container
+          exit 1
+
+      - name: Stop and remove Docker container api_admin-container
+        run: |
+          docker stop api_admin-container
+          docker rm api_admin-container
