@@ -44,4 +44,5 @@ jobs:
         run: docker build -t api-user:latest -f ./api-user/Dockerfile ./api-user
 
       - name: Build Docker Image for api-admin
+        if: contains(github.event.pull_request.changed_files, 'api-admin/')
         run: docker build -t api-admin:latest -f ./api-admin/Dockerfile ./api-admin
