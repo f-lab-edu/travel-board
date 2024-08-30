@@ -14,6 +14,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up JDK 21
         uses: actions/setup-java@v4
@@ -45,7 +47,7 @@ jobs:
 
       - name: Build Docker Image for api-admin (if necessary)
         run: |
-          if git diff --name-only ${{ github.sha }}^ ${{ github.sha }} | grep -qE '^api-admin/|^support/|^storage/|^build.gradle.kts$|^settings.gradle.kts$|^gradle.properties$'; then
+          if git diff --name-only origin/main...HEAD | grep -qE '^api-admin/|^support/|^storage/|^build.gradle.kts$|^settings.gradle.kts$|^gradle.properties$'; then
             echo "Building Docker image for api-admin"
             docker build -t api-admin:latest -f ./api-admin/Dockerfile ./api-admin
           else
