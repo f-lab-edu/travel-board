@@ -43,13 +43,16 @@ jobs:
       - name: Build Docker Image for api-user
         run: docker build -t api-user:latest -f ./api-user/Dockerfile ./api-user
 
-      # Runs only when there are changes related to the api-admin module
+      - name: validate api-admin changes
+        id: check_admin_changes
+        run: |
+          git diff --name-only ${{ github.event.before }} ${{ github.sha }} > changed_files.txt
+          if grep -qE '^api-admin/|^support/|^storage/|^build.gradle.kts$|^settings.gradle.kts$|^gradle.properties$' changed_files.txt; then
+            echo "admin_changed=true" >> $GITHUB_ENV
+          else
+            echo "admin_changed=false" >> $GITHUB_ENV
+          fi
+
       - name: Build Docker Image for api-admin
-        if: |
-          contains(github.event.pull_request.changed_files, 'api-admin/') ||
-          contains(github.event.pull_request.changed_files, 'storage/') || 
-          contains(github.event.pull_request.changed_files, 'support/') ||
-          contains(github.event.pull_request.changed_files, '^build.gradle.kts$') ||
-          contains(github.event.pull_request.changed_files, '^settings.gradle.kts$') ||
-          contains(github.event.pull_request.changed_files, '^gradle.properties$')
+        if: env.admin_changed == 'true'
         run: docker build -t api-admin:latest -f ./api-admin/Dockerfile ./api-admin
