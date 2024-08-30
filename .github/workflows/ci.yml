@@ -40,40 +40,8 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew build -x test
 
-      - name: Upload build artifacts for api-user and api-admin
-        uses: actions/upload-artifact@v4
-        with:
-          name: build-artifacts
-          path: |
-            ./api-user/build/libs/api-user*.jar
-            ./api-admin/build/libs/api-admin*.jar
-
-  docker_build_api_user:
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Download build artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: build-artifacts
-
       - name: Build Docker Image for api-user
         run: docker build -t api-user:latest -f ./api-user/Dockerfile ./api-user
-
-  docker_build_api_admin:
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Download build artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: build-artifacts
 
       - name: Build Docker Image for api-admin
         run: docker build -t api-admin:latest -f ./api-admin/Dockerfile ./api-admin
