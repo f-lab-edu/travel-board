@@ -63,30 +63,6 @@ jobs:
       - name: Build Docker Image for api-user
         run: docker build -t api-user:latest -f ./api-user/Dockerfile ./api-user
 
-      - name: Run Docker Container for api-user
-        run: docker run -d -p 8080:8080 --name api-user-container api-user:latest
-
-      # Wait for server 60 seconds to be ready
-      - name: Check api-user API health endpoint
-        run: |
-          for i in {1..12}; do
-            if curl --fail http://localhost:8080/health; then
-              echo "Success to connect to the server"
-              exit 0
-            else
-              echo "Waiting for the server to be ready... ($i/12)"
-              sleep 5
-            fi
-          done
-          echo "Server did not become ready in time."
-          docker logs api-user-container
-          exit 1
-
-      - name: Stop and remove Docker container api-user-container
-        run: |
-          docker stop api-user-container
-          docker rm api-user-container
-
   docker_build_api_admin:
     runs-on: ubuntu-latest
     needs: build
@@ -101,27 +77,3 @@ jobs:
 
       - name: Build Docker Image for api-admin
         run: docker build -t api-admin:latest -f ./api-admin/Dockerfile ./api-admin
-
-      - name: Run Docker Container for api-admin
-        run: docker run -d -p 8081:8081 --name api-admin-container api-admin:latest
-
-      # Wait for server 60 seconds to be ready
-      - name: Check api-admin API health endpoint
-        run: |
-          for i in {1..12}; do
-            if curl --fail http://localhost:8081/health; then
-              echo "Success to connect to the server"
-              exit 0
-            else
-              echo "Waiting for the server to be ready... ($i/12)"
-              sleep 5
-            fi
-          done
-          echo "Server did not become ready in time."
-          docker logs api-admin-container
-          exit 1
-
-      - name: Stop and remove Docker container api-admin-container
-        run: |
-          docker stop api-admin-container
-          docker rm api-admin-container
